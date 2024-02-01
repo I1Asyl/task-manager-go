@@ -1,4 +1,4 @@
-package storage
+package repositories
 
 import "database/sql"
 
@@ -15,8 +15,8 @@ func New(db *sql.DB) *Repository {
 }
 
 // DoSomething function is a method of Repository
-func (r *Repository) DoSomething() error {
-	return nil
+func (r *Repository) ReturnStatus() string {
+	return "pong"
 }
 
 // use sqlc for generating db access code in Go

@@ -7,10 +7,11 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/udaya2899/go-gin-starter/configuration"
-	"github.com/udaya2899/go-gin-starter/connection"
-	"github.com/udaya2899/go-gin-starter/server"
-	"github.com/udaya2899/go-gin-starter/storage"
+	"github.com/I1Asyl/task-manager-go/configuration"
+	"github.com/I1Asyl/task-manager-go/database"
+	"github.com/I1Asyl/task-manager-go/pkg/handler"
+	"github.com/I1Asyl/task-manager-go/pkg/repositories"
+	"github.com/I1Asyl/task-manager-go/pkg/services"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -32,18 +33,20 @@ func main() {
 func run() error {
 	config := configuration.New()
 
-	db, err := connection.NewConnection(config.Database)
+	db, err := database.NewConnection(config.Database)
 	if err != nil {
 		return err
 	}
 
-	repository := storage.New(db)
+	repository := repositories.New(db)
 
 	go handleShutdown(db)
 
-	s := server.New(repository)
+	services := services.New(repository)
 
-	if err = s.Run(fmt.Sprintf(":%d", config.Server.Port)); err != nil {
+	h := handler.New(services)
+	r := h.Assign()
+	if err = r.Run(fmt.Sprintf(":%d", config.Server.Port)); err != nil {
 		return err
 	}
 

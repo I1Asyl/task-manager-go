@@ -1,12 +1,12 @@
-package connection
+package database
 
 import (
 	"database/sql"
 	"fmt"
 
 	// postgres driver
+	"github.com/I1Asyl/task-manager-go/configuration"
 	_ "github.com/lib/pq"
-	"github.com/udaya2899/go-gin-starter/configuration"
 )
 
 // NewConnection creates a new connection from the given configs
