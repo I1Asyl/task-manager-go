@@ -2,21 +2,25 @@ package repositories
 
 import "database/sql"
 
+type auth interface {
+}
+
+type static interface {
+	ReturnStatus() string
+}
+
 // Repository structure to c
 type Repository struct {
-	db *sql.DB
+	auth
+	static
 }
 
 // New returns a new repository with relevant methods configured
 func New(db *sql.DB) *Repository {
 	return &Repository{
-		db: db,
+		auth:   NewAuthorization(db),
+		static: NewStatic(db),
 	}
-}
-
-// DoSomething function is a method of Repository
-func (r *Repository) ReturnStatus() string {
-	return "pong"
 }
 
 // use sqlc for generating db access code in Go
