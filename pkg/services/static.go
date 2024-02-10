@@ -10,6 +10,6 @@ func NewStatic(repo *repositories.Repository) *Static {
 	return &Static{repo: repo}
 }
 
-func (s *Static) ReturnStatus() string {
+func (s Static) ReturnStatus() string {
 	return s.repo.ReturnStatus()
 }

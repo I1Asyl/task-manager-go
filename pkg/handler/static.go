@@ -15,6 +15,6 @@ func NewStatic(services services.Service) *Static {
 	return &Static{services: services}
 }
 
-func (s *Static) getStatus(c *gin.Context) {
+func (s Static) getStatus(c *gin.Context) {
 	c.String(http.StatusOK, s.services.ReturnStatus())
 }

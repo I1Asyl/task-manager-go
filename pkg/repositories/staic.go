@@ -13,6 +13,6 @@ func NewStatic(db *sql.DB) *Static {
 }
 
 // DoSomething function is a method of Repository
-func (s *Static) ReturnStatus() string {
+func (s Static) ReturnStatus() string {
 	return "pong"
 }
