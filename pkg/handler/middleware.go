@@ -39,6 +39,7 @@ func (h Handler) AdminMiddleware() gin.HandlerFunc {
 			c.AbortWithStatusJSON(401, gin.H{"error": "unauthorized"})
 		}
 		c.Set("userId", id)
+		c.Set("token", headerParts[1])
 		c.Next()
 	}
 }

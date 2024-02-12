@@ -13,6 +13,7 @@ type auth interface {
 	RefreshToken(tokenString string) (string, string, error)
 	CreateTeam(model database.Model) (map[string]string, error)
 	GetUserIdByToken(token string) (int, error)
+	Logout(token string) error
 }
 
 type static interface {

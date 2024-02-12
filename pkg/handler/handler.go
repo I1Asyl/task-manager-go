@@ -14,6 +14,8 @@ type auth interface {
 	refreshToken(ctx *gin.Context)
 	createTeam(ctx *gin.Context)
 	getUserIdByToken(token string) (int, error)
+	logout(ctx *gin.Context)
+	checkUser(ctx *gin.Context)
 }
 type static interface {
 	getStatus(c *gin.Context)
@@ -48,7 +50,8 @@ func (h Handler) Assign() *gin.Engine {
 		admin.Use(h.AdminMiddleware())
 		admin.POST("/user", h.createUser)
 		admin.POST("/team", h.createTeam)
-
+		admin.POST("/logout", h.logout)
+		admin.GET("/check", h.checkUser)
 	}
 
 	return router

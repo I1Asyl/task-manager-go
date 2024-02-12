@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"strings"
 	"time"
 
@@ -47,7 +48,7 @@ func generateTokens(user database.User, firstToken string) (string, string, erro
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id":  user.Id,
 		"is_admin": user.IsAdmin,
-		"exp":      time.Now().Unix() + 60*5,
+		"exp":      time.Now().Unix() + 60*60,
 	})
 	accessTokenString, err := accessToken.SignedString([]byte("secret"))
 	if err != nil {
@@ -139,10 +140,29 @@ func (a Authorization) VerifyAdmin(tokenString string) bool {
 	if err != nil {
 		return false
 	}
-	if claims["is_admin"].(bool) {
+	if _, ok := claims["is_admin"]; !ok {
+		return false
+	}
+	if claim, ok := claims["is_admin"].(bool); ok && claim {
 		return true
 	}
 	return false
+}
+
+func (a Authorization) Logout(token string) error {
+	claims, err := parseToken(token)
+	if err != nil {
+		return err
+	}
+	firstToken, ok := claims["first_token"]
+	if !ok {
+		return errors.New("Token is invalid")
+	}
+	firstTokenString, ok := firstToken.(string)
+	if !ok {
+		return errors.New("Token is invalid")
+	}
+	return a.repo.DeleteToken(firstTokenString)
 }
 
 func (a Authorization) Login(model database.Model) (string, string, map[string]string, error) {

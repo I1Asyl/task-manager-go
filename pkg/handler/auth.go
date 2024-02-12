@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/I1Asyl/task-manager-go/database"
 	"github.com/I1Asyl/task-manager-go/pkg/services"
@@ -47,9 +47,9 @@ func (a Auth) createUser(ctx *gin.Context) {
 
 func (a Auth) createTeam(ctx *gin.Context) {
 	var team database.Model
-	userId, exists := ctx.Get("userId")
-	if exists {
-		fmt.Println(userId)
+	_, exists := ctx.Get("userId")
+	if !exists {
+		panic(errors.New("no user id"))
 	}
 	if err := ctx.BindJSON(&team); err != nil {
 		ctx.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
@@ -63,6 +63,14 @@ func (a Auth) createTeam(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, team)
+}
+
+func (a Auth) checkUser(ctx *gin.Context) {
+	_, exists := ctx.Get("userId")
+	if !exists {
+		panic(errors.New("user id does not exist"))
+	}
+	ctx.JSON(200, gin.H{"message": "success"})
 }
 func (a Auth) login(ctx *gin.Context) {
 	var user database.Model
@@ -98,6 +106,22 @@ func (a Auth) refreshToken(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, gin.H{"access": access, "refresh": refresh})
+}
+
+func (a Auth) logout(ctx *gin.Context) {
+	var user struct {
+		Token string `json:"token"`
+	}
+	if err := ctx.BindJSON(&user); err != nil {
+		ctx.Error(err)
+		ctx.AbortWithStatusJSON(400, gin.H{"error": "Given data is not corect"})
+		return
+	}
+	if err := a.services.Logout(user.Token); err != nil {
+		ctx.AbortWithError(400, err)
+		return
+	}
+	ctx.JSON(200, gin.H{"message": "success"})
 }
 
 // func (a Auth) CreateUser(user database.User) error {
