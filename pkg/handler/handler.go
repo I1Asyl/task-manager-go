@@ -7,15 +7,19 @@ import (
 )
 
 type auth interface {
-	createUser(ctx *gin.Context)
 	login(ctx *gin.Context)
 	verifyUser(jwt string) bool
 	verifyAdmin(jwt string) bool
 	refreshToken(ctx *gin.Context)
-	createTeam(ctx *gin.Context)
 	getUserIdByToken(token string) (int, error)
 	logout(ctx *gin.Context)
 	checkUser(ctx *gin.Context)
+}
+
+type admin interface {
+	createUser(ctx *gin.Context)
+	createTeam(ctx *gin.Context)
+	addUserToTeam(ctx *gin.Context)
 }
 type static interface {
 	getStatus(c *gin.Context)
@@ -24,11 +28,12 @@ type static interface {
 type Handler struct {
 	auth
 	static
+	admin
 }
 
 // New returns a new instance of a gin server
 func New(services *services.Service) *Handler {
-	return &Handler{auth: NewAuth(*services), static: NewStatic(*services)}
+	return &Handler{auth: NewAuth(*services), static: NewStatic(*services), admin: NewAdmin(*services)}
 }
 
 func (h Handler) Assign() *gin.Engine {
@@ -42,6 +47,8 @@ func (h Handler) Assign() *gin.Engine {
 	authorized := router.Group("")
 	{
 		authorized.Use(h.AuthMiddleware())
+		authorized.POST("/logout", h.logout)
+		authorized.GET("/check", h.checkUser)
 
 	}
 
@@ -50,8 +57,8 @@ func (h Handler) Assign() *gin.Engine {
 		admin.Use(h.AdminMiddleware())
 		admin.POST("/user", h.createUser)
 		admin.POST("/team", h.createTeam)
-		admin.POST("/logout", h.logout)
-		admin.GET("/check", h.checkUser)
+		admin.POST("/teamUser", h.addUserToTeam)
+
 	}
 
 	return router

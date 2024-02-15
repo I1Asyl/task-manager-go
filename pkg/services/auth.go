@@ -18,32 +18,6 @@ func NewAuthorization(repo *repositories.Repository) *Authorization {
 	return &Authorization{repo: repo}
 }
 
-func (a Authorization) CreateUser(model database.Model) (map[string]string, error) {
-
-	user := database.User(model.User)
-	if mistakes := user.IsValid(); len(mistakes) > 0 {
-		return mistakes, nil
-	}
-	err := a.repo.CreateUser(user)
-	if err != nil {
-		return nil, err
-	}
-	return nil, nil
-}
-
-func (a Authorization) CreateTeam(model database.Model) (map[string]string, error) {
-
-	team := database.Team(model.Team)
-	if mistakes := team.IsValid(); len(mistakes) > 0 {
-		return mistakes, nil
-	}
-	err := a.repo.CreateTeam(team)
-	if err != nil {
-		return nil, err
-	}
-	return nil, nil
-}
-
 func generateTokens(user database.User, firstToken string) (string, string, error) {
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id":  user.Id,

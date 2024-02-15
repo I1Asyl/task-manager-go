@@ -7,14 +7,18 @@ import (
 )
 
 type auth interface {
-	CreateUser(user database.User) error
 	GetUser(user database.UserForm) (database.User, error)
 	AddSession(session database.Session) error
 	CheckRefreshToken(first_token, token string) (bool, error)
 	DeleteToken(first_token string) error
 	GetUserByFirstToken(first_token string) (database.User, error)
 	UpdateToken(first_token string, token string) error
+}
+
+type admin interface {
+	CreateUser(user database.User) error
 	CreateTeam(team database.Team) error
+	AddUserToTeam(user database.User, team database.Team) error
 }
 
 type static interface {
@@ -25,6 +29,7 @@ type static interface {
 type Repository struct {
 	auth
 	static
+	admin
 }
 
 // New returns a new repository with relevant methods configured
@@ -32,6 +37,7 @@ func New(db *sql.DB) *Repository {
 	return &Repository{
 		auth:   NewAuthorization(db),
 		static: NewStatic(db),
+		admin:  NewAdmin(db),
 	}
 }
 

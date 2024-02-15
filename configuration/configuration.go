@@ -11,11 +11,18 @@ import (
 type Configuration struct {
 	Server   ServerConfiguration
 	Database DatabaseConfiguration
+	JWT      JWTConfiguration
 }
 
 // ServerConfiguration exported
 type ServerConfiguration struct {
 	Port int
+}
+
+type JWTConfiguration struct {
+	Secret     string
+	Ttl        int
+	TtlRefresh int
 }
 
 // DatabaseConfiguration exported

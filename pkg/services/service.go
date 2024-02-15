@@ -6,14 +6,18 @@ import (
 )
 
 type auth interface {
-	CreateUser(model database.Model) (map[string]string, error)
 	Login(model database.Model) (string, string, map[string]string, error)
 	VerifyUser(tokenString string) bool
 	VerifyAdmin(tokenString string) bool
 	RefreshToken(tokenString string) (string, string, error)
-	CreateTeam(model database.Model) (map[string]string, error)
 	GetUserIdByToken(token string) (int, error)
 	Logout(token string) error
+}
+
+type admin interface {
+	CreateUser(model database.Model) (map[string]string, error)
+	CreateTeam(model database.Model) (map[string]string, error)
+	AddUserToTeam(model database.Model) error
 }
 
 type static interface {
@@ -23,8 +27,9 @@ type static interface {
 type Service struct {
 	auth
 	static
+	admin
 }
 
 func New(repo *repositories.Repository) *Service {
-	return &Service{auth: NewAuthorization(repo), static: NewStatic(repo)}
+	return &Service{auth: NewAuthorization(repo), static: NewStatic(repo), admin: NewAdmin(repo)}
 }

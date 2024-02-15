@@ -7,3 +7,8 @@ database:
   name: "go_restful"
   user: "postgres"
   password: "algakazakhstan"
+
+jwt:
+  secret: "secret"
+  ttl: 3600
+  ttlRefresh: 86400
