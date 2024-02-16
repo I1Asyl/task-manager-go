@@ -44,3 +44,8 @@ func (a Admin) AddUserToTeam(model database.Model) error {
 	user := database.User(model.User)
 	return a.repo.AddUserToTeam(user, team)
 }
+
+func (a Admin) GetTeamMembers(model database.Model) ([]database.User, error) {
+	team := database.Team(model.Team)
+	return a.repo.GetTeamMembers(team)
+}

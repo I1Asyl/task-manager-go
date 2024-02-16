@@ -18,6 +18,7 @@ type admin interface {
 	CreateUser(model database.Model) (map[string]string, error)
 	CreateTeam(model database.Model) (map[string]string, error)
 	AddUserToTeam(model database.Model) error
+	GetTeamMembers(model database.Model) ([]database.User, error)
 }
 
 type static interface {

@@ -20,6 +20,7 @@ type admin interface {
 	createUser(ctx *gin.Context)
 	createTeam(ctx *gin.Context)
 	addUserToTeam(ctx *gin.Context)
+	getTeamMembers(ctx *gin.Context)
 }
 type static interface {
 	getStatus(c *gin.Context)
@@ -58,7 +59,7 @@ func (h Handler) Assign() *gin.Engine {
 		admin.POST("/user", h.createUser)
 		admin.POST("/team", h.createTeam)
 		admin.POST("/teamUser", h.addUserToTeam)
-
+		admin.GET("/teamUser", h.getTeamMembers)
 	}
 
 	return router

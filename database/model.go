@@ -8,38 +8,38 @@ import (
 )
 
 type Model struct {
-	User     User     `json:"user"`
-	UserForm UserForm `json:"user_form"`
-	Team     Team     `json:"team"`
+	User     User     `json:"user db:"user"`
+	UserForm UserForm `json:"user_form" db:"user_form"`
+	Team     Team     `json:"team" db:"team"`
 }
 
 type User struct {
-	Id       int    `json:"id"`
-	Username string `json:"username"`
-	Name     string `json:"name"`
-	Surname  string `json:"surname"`
-	Email    string `json:"email"`
-	Phone    string `json:"phone"`
-	Password string `json:"password"`
-	RoleId   int    `json:"role_id"`
-	TeamId   int    `json:"team_id"`
-	IsAdmin  bool   `json:"is_admin"`
+	Id       int    `json:"id" db:"id"`
+	Username string `json:"username" db:"username"`
+	Name     string `json:"name" db:"name"`
+	Surname  string `json:"surname" db:"surname"`
+	Email    string `json:"email" db:"email"`
+	Phone    string `json:"phone" db:"phone"`
+	Password string `json:"password" db:"password"`
+	RoleId   int    `json:"role_id" db:"role_id"`
+	TeamId   int    `json:"team_id" db:"team_id"`
+	IsAdmin  bool   `json:"is_admin" db:"is_admin"`
 }
 
 type Team struct {
-	Id   int    `json:"id"`
-	Name string `json:"name"`
+	Id   int    `json:"id" db:"id"`
+	Name string `json:"name" db:"name"`
 }
 
 type UserForm struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username string `json:"username" db:"username"`
+	Password string `json:"password" db:"password"`
 }
 type Session struct {
-	Id         int    `json:"id"`
-	UserId     int    `json:"user_id"`
-	FirstToken string `json:"first_token"`
-	Token      string `json:"token"`
+	Id         int    `json:"id" db:"id"`
+	UserId     int    `json:"user_id" db:"user_id"`
+	FirstToken string `json:"first_token" db:"first_token"`
+	Token      string `json:"token" db:"token"`
 }
 
 func (u UserForm) IsValid() map[string]string {
