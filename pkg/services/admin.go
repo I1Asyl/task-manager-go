@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+
 	"github.com/I1Asyl/task-manager-go/database"
 	"github.com/I1Asyl/task-manager-go/pkg/repositories"
 )
@@ -30,11 +32,15 @@ func (a Admin) CreateTeam(model database.Model) (map[string]string, error) {
 
 	team := database.Team(model.Team)
 	if mistakes := team.IsValid(); len(mistakes) > 0 {
-		return mistakes, nil
+		fmt.Println(mistakes)
 	}
 
 	if err := a.repo.CreateTeam(team); err != nil {
 		return nil, err
 	}
 	return nil, nil
+}
+
+func (a Admin) DeleteTeam(model database.Model) error {
+	return a.repo.DeleteTeam(model.Team.Id)
 }

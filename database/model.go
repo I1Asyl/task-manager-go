@@ -13,6 +13,7 @@ type Model struct {
 	UserForm    UserForm `json:"user_form" db:"user_form"`
 	Team        Team     `json:"team" db:"team"`
 	Role        Role     `json:"role"`
+	Project     Project  `json:"project"`
 }
 
 type User struct {
@@ -52,6 +53,14 @@ type UserTeam struct {
 	UserId int `json:"user_id" db:"user_id"`
 	TeamId int `json:"team_id" db:"team_id"`
 	RoleId int `json:"role_id" db:"role_id"`
+}
+
+type Project struct {
+	Id            int    `json:"id" db:"XX"`
+	Name          string `json:"name" db:"XXXX"`
+	Description   string `json:"description" db:"XXXXXXXXXXX"`
+	TeamId        int    `json:"team_id" db:"XXXXX"`
+	CurrentStatus string `json:"current_status" db:"XXXXXX"`
 }
 
 func (u UserForm) IsValid() map[string]string {

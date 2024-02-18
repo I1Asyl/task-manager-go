@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"strconv"
 
 	"github.com/I1Asyl/task-manager-go/database"
 	"github.com/I1Asyl/task-manager-go/pkg/services"
@@ -40,10 +41,10 @@ func (a Admin) createTeam(ctx *gin.Context) {
 		panic(errors.New("no user id"))
 	}
 	if err := ctx.BindJSON(&team); err != nil {
-		ctx.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
+		ctx.AbortWithError(400, err)
 		return
 	}
-	if mistakes, err := a.services.CreateTeam(team); len(mistakes) > 0 {
+	if mistakes, err := a.services.CreateTeam(team); len(mistakes) > 0 || err != nil {
 		if err != nil {
 			ctx.Error(err)
 		}
@@ -51,4 +52,19 @@ func (a Admin) createTeam(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, team)
+}
+
+func (a Admin) deleteTeam(ctx *gin.Context) {
+	model := database.Model{}
+	var err error
+	model.Team.Id, err = strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.AbortWithError(400, err)
+		return
+	}
+	if err := a.services.DeleteTeam(model); err != nil {
+		ctx.AbortWithError(400, err)
+
+	}
+	ctx.JSON(200, nil)
 }

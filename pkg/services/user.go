@@ -29,6 +29,18 @@ func (a User) AddUserToTeam(model database.Model) error {
 	return a.repo.AddUserToTeam(user.Id, team.Id, role.Id)
 }
 
+func (a User) CreateProject(model database.Model) error {
+	project := database.Project(model.Project)
+	ok, err := a.repo.CanEditTeamProject(model.CurrentUser.Id, model.Team.Id)
+	if !ok {
+		return errors.New("user can't edit project")
+	}
+	if err != nil {
+		return err
+	}
+	return a.repo.CreateProject(project, model.Team.Id)
+}
+
 func (a User) GetTeamMembers(model database.Model) ([]database.User, error) {
 	team := database.Team(model.Team)
 	return a.repo.GetTeamMembers(team.Id)

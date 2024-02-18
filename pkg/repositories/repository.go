@@ -18,15 +18,15 @@ type auth interface {
 type admin interface {
 	CreateUser(user database.User) error
 	CreateTeam(team database.Team) error
-	CanEditTeamUser(userId int, teamId int) (bool, error)
+	DeleteTeam(teamId int) error
 }
 
-type static interface {
-	ReturnStatus() string
-}
 type user interface {
 	GetTeamMembers(teamId int) ([]database.User, error)
 	AddUserToTeam(userId int, teamId int, roleId int) error
+	CanEditTeamUser(userId int, teamId int) (bool, error)
+	CanEditTeamProject(userId int, teamId int) (bool, error)
+	CreateProject(project database.Project, teamId int) error
 }
 
 // Repository structure to c

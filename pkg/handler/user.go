@@ -48,6 +48,23 @@ func (a User) getTeamMembers(ctx *gin.Context) {
 	ctx.JSON(200, ans)
 }
 
+func (a User) createProject(ctx *gin.Context) {
+	var project database.Model
+	if err := ctx.BindJSON(&project); err != nil {
+		ctx.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	userId, exists := ctx.Get("userId")
+	if !exists {
+		panic(errors.New("no user id"))
+	}
+	project.CurrentUser.Id = userId.(int)
+	if err := a.services.CreateProject(project); err != nil {
+		ctx.AbortWithError(400, err)
+	}
+	ctx.JSON(200, project)
+}
+
 func (a User) checkUser(ctx *gin.Context) {
 	_, exists := ctx.Get("userId")
 	if !exists {

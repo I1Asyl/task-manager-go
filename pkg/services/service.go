@@ -17,11 +17,13 @@ type auth interface {
 type admin interface {
 	CreateUser(model database.Model) (map[string]string, error)
 	CreateTeam(model database.Model) (map[string]string, error)
+	DeleteTeam(model database.Model) error
 }
 
 type user interface {
 	AddUserToTeam(model database.Model) error
 	GetTeamMembers(model database.Model) ([]database.User, error)
+	CreateProject(model database.Model) error
 }
 
 type Service struct {

@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/I1Asyl/task-manager-go/database"
 )
@@ -26,6 +27,10 @@ func (a Admin) CreateTeam(team database.Team) error {
 	if err != nil {
 		return err
 	}
+	err = a.db.QueryRow("SELECT id FROM teams WHERE name = $1", team.Name).Scan(&team.Id)
+	if err != nil {
+		return err
+	}
 	res, err := a.db.Query("SELECT id FROM users WHERE is_admin = true")
 	if err != nil {
 		return err
@@ -33,7 +38,8 @@ func (a Admin) CreateTeam(team database.Team) error {
 	for res.Next() {
 		var user database.User
 		res.Scan(&user.Id)
-		_, err := a.db.Query("INSERT INTO teams_users (team_id, user_id, role_id) VALUES ($1, $2, 1)", team.Id, user.Id)
+		fmt.Println(team.Id, user.Id)
+		_, err := a.db.Query("INSERT INTO users_teams (team_id, user_id, role_id) VALUES ($1, $2, 1)", team.Id, user.Id)
 		if err != nil {
 			return err
 		}
@@ -41,14 +47,15 @@ func (a Admin) CreateTeam(team database.Team) error {
 	return nil
 }
 
-func (a Admin) CanEditTeamUser(userId int, teamId int) (bool, error) {
-	var canEdit bool
-	err := a.db.QueryRow("SELECT can_edit_users FROM roles WHERE id IN (SELECT role_id FROM users_teams WHERE user_id = $1 AND team_id = $2)", userId, teamId).Scan(&canEdit)
-	return canEdit, err
-}
+func (a Admin) DeleteTeam(teamId int) error {
+	_, err := a.db.Query("DELETE FROM users_teams WHERE team_id = $1", teamId)
+	if err != nil {
+		return err
+	}
+	_, err = a.db.Query("DELETE FROM teams WHERE id = $1", teamId)
+	if err != nil {
+		return err
+	}
 
-func (a Admin) CanEditTeamProject(userId int, teamId int) (bool, error) {
-	var canEdit bool
-	err := a.db.QueryRow("SELECT can_edit_projects FROM roles WHERE id IN (SELECT role_id FROM users_teams WHERE user_id = $1 AND team_id = $2)", userId, teamId).Scan(&canEdit)
-	return canEdit, err
+	return nil
 }

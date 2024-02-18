@@ -15,12 +15,14 @@ type auth interface {
 type admin interface {
 	createUser(ctx *gin.Context)
 	createTeam(ctx *gin.Context)
+	deleteTeam(ctx *gin.Context)
 }
 type user interface {
 	addUserToTeam(ctx *gin.Context)
 	getTeamMembers(ctx *gin.Context)
 	logout(ctx *gin.Context)
 	checkUser(ctx *gin.Context)
+	createProject(ctx *gin.Context)
 }
 
 type middleware interface {
@@ -58,6 +60,8 @@ func (h Handler) Assign() *gin.Engine {
 
 		authorized.POST("/teamUser", h.user.addUserToTeam)
 		authorized.GET("/teamUser", h.user.getTeamMembers)
+
+		authorized.POST("/project", h.user.createProject)
 	}
 
 	admin := router.Group("")
@@ -65,6 +69,7 @@ func (h Handler) Assign() *gin.Engine {
 		admin.Use(h.AdminMiddleware())
 		admin.POST("/user", h.createUser)
 		admin.POST("/team", h.createTeam)
+		admin.DELETE("/team/:id", h.deleteTeam)
 
 	}
 
