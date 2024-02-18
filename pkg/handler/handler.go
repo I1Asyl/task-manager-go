@@ -8,51 +8,56 @@ import (
 
 type auth interface {
 	login(ctx *gin.Context)
-	verifyUser(jwt string) bool
-	verifyAdmin(jwt string) bool
+
 	refreshToken(ctx *gin.Context)
-	getUserIdByToken(token string) (int, error)
-	logout(ctx *gin.Context)
-	checkUser(ctx *gin.Context)
 }
 
 type admin interface {
 	createUser(ctx *gin.Context)
 	createTeam(ctx *gin.Context)
+}
+type user interface {
 	addUserToTeam(ctx *gin.Context)
 	getTeamMembers(ctx *gin.Context)
+	logout(ctx *gin.Context)
+	checkUser(ctx *gin.Context)
 }
-type static interface {
-	getStatus(c *gin.Context)
+
+type middleware interface {
+	verifyUser(jwt string) bool
+	verifyAdmin(jwt string) bool
+	getUserIdByToken(token string) (int, error)
+	UserMiddleware() gin.HandlerFunc
+	AdminMiddleware() gin.HandlerFunc
 }
 
 type Handler struct {
+	middleware
 	auth
-	static
+	user
 	admin
 }
 
 // New returns a new instance of a gin server
 func New(services *services.Service) *Handler {
-	return &Handler{auth: NewAuth(*services), static: NewStatic(*services), admin: NewAdmin(*services)}
+	return &Handler{auth: NewAuth(*services), user: NewUser(*services), admin: NewAdmin(*services), middleware: NewMiddleware(*services)}
 }
 
 func (h Handler) Assign() *gin.Engine {
 	router := gin.New()
 	router.Use(logger.SetLogger())
 	router.Use(gin.Recovery())
-	router.GET("/ping", h.static.getStatus)
 
 	router.GET("/login", h.auth.login)
 	router.GET("/refresh", h.auth.refreshToken)
 	authorized := router.Group("")
 	{
 		authorized.Use(h.UserMiddleware())
-		authorized.POST("/logout", h.logout)
-		authorized.GET("/check", h.checkUser)
+		authorized.POST("/logout", h.user.logout)
+		authorized.GET("/check", h.user.checkUser)
 
-		authorized.POST("/teamUser", h.addUserToTeam)
-		authorized.GET("/teamUser", h.getTeamMembers)
+		authorized.POST("/teamUser", h.user.addUserToTeam)
+		authorized.GET("/teamUser", h.user.getTeamMembers)
 	}
 
 	admin := router.Group("")

@@ -18,28 +18,30 @@ type auth interface {
 type admin interface {
 	CreateUser(user database.User) error
 	CreateTeam(team database.Team) error
-	AddUserToTeam(userId int, teamId int, roleId int) error
-	GetTeamMembers(teamId int) ([]database.User, error)
 	CanEditTeamUser(userId int, teamId int) (bool, error)
 }
 
 type static interface {
 	ReturnStatus() string
 }
+type user interface {
+	GetTeamMembers(teamId int) ([]database.User, error)
+	AddUserToTeam(userId int, teamId int, roleId int) error
+}
 
 // Repository structure to c
 type Repository struct {
 	auth
-	static
 	admin
+	user
 }
 
 // New returns a new repository with relevant methods configured
 func New(db *sql.DB) *Repository {
 	return &Repository{
-		auth:   NewAuthorization(db),
-		static: NewStatic(db),
-		admin:  NewAdmin(db),
+		auth:  NewAuthorization(db),
+		admin: NewAdmin(db),
+		user:  NewUser(db),
 	}
 }
 

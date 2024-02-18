@@ -17,20 +17,19 @@ type auth interface {
 type admin interface {
 	CreateUser(model database.Model) (map[string]string, error)
 	CreateTeam(model database.Model) (map[string]string, error)
+}
+
+type user interface {
 	AddUserToTeam(model database.Model) error
 	GetTeamMembers(model database.Model) ([]database.User, error)
 }
 
-type static interface {
-	ReturnStatus() string
-}
-
 type Service struct {
 	auth
-	static
+	user
 	admin
 }
 
 func New(repo *repositories.Repository) *Service {
-	return &Service{auth: NewAuthorization(repo), static: NewStatic(repo), admin: NewAdmin(repo)}
+	return &Service{auth: NewAuthorization(repo), user: NewUser(repo), admin: NewAdmin(repo)}
 }

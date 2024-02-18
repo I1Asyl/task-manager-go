@@ -52,35 +52,3 @@ func (a Admin) createTeam(ctx *gin.Context) {
 	}
 	ctx.JSON(200, team)
 }
-
-func (a Admin) addUserToTeam(ctx *gin.Context) {
-	userId, exists := ctx.Get("userId")
-	if !exists {
-		panic(errors.New("no user id"))
-	}
-	var user database.Model
-	user.CurrentUser.Id = userId.(int)
-
-	if err := ctx.BindJSON(&user); err != nil {
-		ctx.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := a.services.AddUserToTeam(user); err != nil {
-		ctx.AbortWithError(400, err)
-	}
-	ctx.JSON(200, user)
-}
-
-func (a Admin) getTeamMembers(ctx *gin.Context) {
-	var team database.Model
-	if err := ctx.BindJSON(&team); err != nil {
-		ctx.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
-		return
-	}
-	ans, err := a.services.GetTeamMembers(team)
-	if err != nil {
-		ctx.AbortWithError(400, err)
-	}
-	ctx.JSON(200, ans)
-}
