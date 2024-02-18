@@ -18,8 +18,9 @@ type auth interface {
 type admin interface {
 	CreateUser(user database.User) error
 	CreateTeam(team database.Team) error
-	AddUserToTeam(user database.User, team database.Team) error
-	GetTeamMembers(user database.Team) ([]database.User, error)
+	AddUserToTeam(userId int, teamId int, roleId int) error
+	GetTeamMembers(teamId int) ([]database.User, error)
+	CanEditTeamUser(userId int, teamId int) (bool, error)
 }
 
 type static interface {

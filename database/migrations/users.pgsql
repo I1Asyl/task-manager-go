@@ -11,4 +11,6 @@ CREATE TABLE users (
 
 INSERT INTO users(username, name, surname, phone, password, email, is_admin) VALUES ('asus', 'yera', 'Yera', 'Altay', 'Qqwerty1!', 'altayerasyl@gmail.com', true);
 
+INSERT INTO users(username, name, surname, phone, password, email, is_admin) VALUES ('asyl', 'yera', 'Yera', 'Altays', 'Qqwerty1!', 'altayyerasyl@gmail.com', false);
 
+INSERT INTO users(username, name, surname, phone, password, email, is_admin) VALUES ('asylasus', 'yera', 'Yera', 'Altayss', 'Qqwerty1!', 'ltayyerasyl@gmail.com', false);

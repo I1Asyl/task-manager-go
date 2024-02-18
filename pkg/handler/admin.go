@@ -54,11 +54,18 @@ func (a Admin) createTeam(ctx *gin.Context) {
 }
 
 func (a Admin) addUserToTeam(ctx *gin.Context) {
+	userId, exists := ctx.Get("userId")
+	if !exists {
+		panic(errors.New("no user id"))
+	}
 	var user database.Model
+	user.CurrentUser.Id = userId.(int)
+
 	if err := ctx.BindJSON(&user); err != nil {
 		ctx.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
 		return
 	}
+
 	if err := a.services.AddUserToTeam(user); err != nil {
 		ctx.AbortWithError(400, err)
 	}

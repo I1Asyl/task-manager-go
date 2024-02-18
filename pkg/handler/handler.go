@@ -47,10 +47,12 @@ func (h Handler) Assign() *gin.Engine {
 	router.GET("/refresh", h.auth.refreshToken)
 	authorized := router.Group("")
 	{
-		authorized.Use(h.AuthMiddleware())
+		authorized.Use(h.UserMiddleware())
 		authorized.POST("/logout", h.logout)
 		authorized.GET("/check", h.checkUser)
 
+		authorized.POST("/teamUser", h.addUserToTeam)
+		authorized.GET("/teamUser", h.getTeamMembers)
 	}
 
 	admin := router.Group("")
@@ -58,8 +60,7 @@ func (h Handler) Assign() *gin.Engine {
 		admin.Use(h.AdminMiddleware())
 		admin.POST("/user", h.createUser)
 		admin.POST("/team", h.createTeam)
-		admin.POST("/teamUser", h.addUserToTeam)
-		admin.GET("/teamUser", h.getTeamMembers)
+
 	}
 
 	return router

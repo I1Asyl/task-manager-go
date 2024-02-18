@@ -8,9 +8,11 @@ import (
 )
 
 type Model struct {
-	User     User     `json:"user db:"user"`
-	UserForm UserForm `json:"user_form" db:"user_form"`
-	Team     Team     `json:"team" db:"team"`
+	CurrentUser User
+	User        User     `json:"user`
+	UserForm    UserForm `json:"user_form" db:"user_form"`
+	Team        Team     `json:"team" db:"team"`
+	Role        Role     `json:"role"`
 }
 
 type User struct {
@@ -21,8 +23,6 @@ type User struct {
 	Email    string `json:"email" db:"email"`
 	Phone    string `json:"phone" db:"phone"`
 	Password string `json:"password" db:"password"`
-	RoleId   int    `json:"role_id" db:"role_id"`
-	TeamId   int    `json:"team_id" db:"team_id"`
 	IsAdmin  bool   `json:"is_admin" db:"is_admin"`
 }
 
@@ -40,6 +40,18 @@ type Session struct {
 	UserId     int    `json:"user_id" db:"user_id"`
 	FirstToken string `json:"first_token" db:"first_token"`
 	Token      string `json:"token" db:"token"`
+}
+
+type Role struct {
+	Id          int    `json:"id" db:"id"`
+	Name        string `json:"name" db:"name"`
+	Description string `json:"description" db:"description"`
+}
+
+type UserTeam struct {
+	UserId int `json:"user_id" db:"user_id"`
+	TeamId int `json:"team_id" db:"team_id"`
+	RoleId int `json:"role_id" db:"role_id"`
 }
 
 func (u UserForm) IsValid() map[string]string {
