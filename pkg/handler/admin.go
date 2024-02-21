@@ -17,14 +17,25 @@ func NewAdmin(service services.Service) *Admin {
 	return &Admin{services: service}
 }
 
+// createUser godoc
+// @Summary      Create an user
+// @Description  Create an user from json file with user as a key and structure as a value.
+// @Tags         admin
+// @Accept       json
+// @Produce      json
+// @Param        user body database.Model  true  "User information"
+// @Param        Authorization header string  true  "Authorization header"
+// @Success      200  {object}  database.Model
+// @Failure      406  {object}  error
+// @Router       /user [post]
 func (a Admin) createUser(ctx *gin.Context) {
 	var user database.Model
 	//var us database.User
 	if err := ctx.BindJSON(&user); err != nil {
-		ctx.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
+		ctx.AbortWithError(400, err)
 		return
 	}
-	if mistakes, err := a.services.CreateUser(user); len(mistakes) > 0 {
+	if mistakes, err := a.services.CreateUser(user); len(mistakes) > 0 || err != nil {
 		if err != nil {
 			ctx.Error(err)
 		}
@@ -34,6 +45,17 @@ func (a Admin) createUser(ctx *gin.Context) {
 	ctx.JSON(200, user)
 }
 
+// createTeam godoc
+// @Summary      Create a team
+// @Description  Create an team from json file with team as a key and structure as a value.
+// @Tags         admin
+// @Accept       json
+// @Produce      json
+// @Param        team body database.Model  true  "Team information"
+// @Param        Authorization header string  true  "Authorization header"
+// @Success      200  {object}  database.Model
+// @Failure      406  {object}  error
+// @Router       /team [post]
 func (a Admin) createTeam(ctx *gin.Context) {
 	var team database.Model
 	_, exists := ctx.Get("userId")

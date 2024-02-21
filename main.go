@@ -9,12 +9,26 @@ import (
 
 	"github.com/I1Asyl/task-manager-go/configuration"
 	"github.com/I1Asyl/task-manager-go/database"
+	"github.com/I1Asyl/task-manager-go/docs"
 	"github.com/I1Asyl/task-manager-go/pkg/handler"
 	"github.com/I1Asyl/task-manager-go/pkg/repositories"
 	"github.com/I1Asyl/task-manager-go/pkg/services"
 
 	log "github.com/sirupsen/logrus"
 )
+
+//	@title			Task manager
+//	@version		1.0
+//	@description	Task manager for a developing company.
+
+//	@contact.name	Task manager
+//	@contact.email	altayyerassyl@gmail.com
+
+// @securityDefinitions.apikey.in header
+// @securityDefinitions.apikey.name Authorization
+
+//	@host		localhost:8080
+//	@BasePath	/
 
 func init() {
 	log.SetOutput(os.Stdout)
@@ -31,6 +45,7 @@ func main() {
 }
 
 func run() error {
+	docs.SwaggerInfo.BasePath = "/"
 	config := configuration.New()
 
 	db, err := database.NewConnection(config.Database)

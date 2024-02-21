@@ -34,13 +34,13 @@ func (a User) GetTeamMembers(teamId int) ([]database.User, error) {
 
 func (a User) CanEditTeamUser(userId int, teamId int) (bool, error) {
 	var canEdit bool
-	err := a.db.QueryRow("SELECT can_edit_users FROM roles WHERE id IN (SELECT role_id FROM users_teams WHERE user_id = $1 AND team_id = $2)", userId, teamId).Scan(&canEdit)
+	err := a.db.QueryRow("SELECT can_edit_users FROM team_roles WHERE id IN (SELECT role_id FROM users_teams WHERE user_id = $1 AND team_id = $2)", userId, teamId).Scan(&canEdit)
 	return canEdit, err
 }
 
 func (a User) CanEditTeamProject(userId int, teamId int) (bool, error) {
 	var canEdit bool
-	err := a.db.QueryRow("SELECT can_edit_projects FROM roles WHERE id IN (SELECT role_id FROM users_teams WHERE user_id = $1 AND team_id = $2)", userId, teamId).Scan(&canEdit)
+	err := a.db.QueryRow("SELECT can_edit_projects FROM team_roles WHERE id IN (SELECT role_id FROM users_teams WHERE user_id = $1 AND team_id = $2)", userId, teamId).Scan(&canEdit)
 	return canEdit, err
 }
 

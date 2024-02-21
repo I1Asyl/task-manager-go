@@ -18,6 +18,7 @@ func NewAdmin(repo *repositories.Repository) *Admin {
 func (a Admin) CreateUser(model database.Model) (map[string]string, error) {
 
 	user := database.User(model.User)
+	fmt.Println(user.Name)
 	if mistakes := user.IsValid(); len(mistakes) > 0 {
 		return mistakes, nil
 	}

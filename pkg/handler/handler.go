@@ -4,6 +4,8 @@ import (
 	"github.com/I1Asyl/task-manager-go/pkg/services"
 	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type auth interface {
@@ -49,6 +51,8 @@ func (h Handler) Assign() *gin.Engine {
 	router := gin.New()
 	router.Use(logger.SetLogger())
 	router.Use(gin.Recovery())
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	router.GET("/login", h.auth.login)
 	router.GET("/refresh", h.auth.refreshToken)

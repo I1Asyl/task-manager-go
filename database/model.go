@@ -56,9 +56,9 @@ type UserTeam struct {
 }
 
 type Project struct {
-	Id            int    `json:"id" db:"XX"`
-	Name          string `json:"name" db:"XXXX"`
-	Description   string `json:"description" db:"XXXXXXXXXXX"`
+	Id            int    `json:"id" db:"id"`
+	Name          string `json:"name" db:"name"`
+	Description   string `json:"description" db:"description"`
 	TeamId        int    `json:"team_id" db:"XXXXX"`
 	CurrentStatus string `json:"current_status" db:"XXXXXX"`
 }
@@ -70,6 +70,17 @@ func (u UserForm) IsValid() map[string]string {
 	}
 	if err := validPassword(u.Password); err != nil {
 		errors["password"] = err.Error()
+	}
+	return errors
+}
+
+func (p Project) IsValid() map[string]string {
+	errors := make(map[string]string)
+	if err := validName(p.Name); err != nil {
+		errors["name"] = err.Error()
+	}
+	if err := validName(p.Description); err != nil {
+		errors["description"] = err.Error()
 	}
 	return errors
 }

@@ -1,0 +1,343 @@
+basePath: /
+definitions:
+  database.Model:
+    properties:
+      currentUser:
+        $ref: '#/definitions/database.User'
+      project:
+        $ref: '#/definitions/database.Project'
+      role:
+        $ref: '#/definitions/database.Role'
+      team:
+        $ref: '#/definitions/database.Team'
+      user:
+        $ref: '#/definitions/database.User'
+      user_form:
+        $ref: '#/definitions/database.UserForm'
+    type: object
+  database.Project:
+    properties:
+      current_status:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      team_id:
+        type: integer
+    type: object
+  database.Role:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  database.Team:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  database.User:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      is_admin:
+        type: boolean
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      surname:
+        type: string
+      username:
+        type: string
+    type: object
+  database.UserForm:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  handler.token:
+    properties:
+      token:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: altayyerassyl@gmail.com
+    name: Task manager
+  description: Task manager for a developing company.
+  title: Task manager
+  version: "1.0"
+paths:
+  /check:
+    get:
+      consumes:
+      - application/json
+      description: Chech if user exists based on authorization header
+      parameters:
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: Check user
+      tags:
+      - user
+  /login:
+    get:
+      consumes:
+      - application/json
+      description: Login user and return access and refresh tokens.
+      parameters:
+      - description: User form
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/database.Model'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: Login
+      tags:
+      - auth
+  /logout:
+    post:
+      consumes:
+      - application/json
+      description: Deactivate given refresh token
+      parameters:
+      - description: Enter refresh token
+        in: body
+        name: model
+        required: true
+        schema:
+          $ref: '#/definitions/handler.token'
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: log out
+      tags:
+      - user
+  /project:
+    post:
+      consumes:
+      - application/json
+      description: Create a project and assign it to the team
+      parameters:
+      - description: Enter project info and team id
+        in: body
+        name: model
+        required: true
+        schema:
+          $ref: '#/definitions/database.Model'
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: Create project
+      tags:
+      - user
+  /refresh:
+    get:
+      consumes:
+      - application/json
+      description: Recieves refresh token as a json named "token" and return access
+        and refresh tokens.
+      parameters:
+      - description: Refresh token
+        in: body
+        name: refresh
+        required: true
+        schema:
+          $ref: '#/definitions/handler.token'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: Refresh token
+      tags:
+      - auth
+  /team:
+    post:
+      consumes:
+      - application/json
+      description: Create an team from json file with team as a key and structure
+        as a value.
+      parameters:
+      - description: Team information
+        in: body
+        name: team
+        required: true
+        schema:
+          $ref: '#/definitions/database.Model'
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Model'
+        "406":
+          description: Not Acceptable
+          schema: {}
+      summary: Create a team
+      tags:
+      - admin
+  /teamUser:
+    get:
+      consumes:
+      - application/json
+      description: Get all users in the taeam
+      parameters:
+      - description: Enter team id
+        in: body
+        name: model
+        required: true
+        schema:
+          $ref: '#/definitions/database.Model'
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: Get team members
+      tags:
+      - user
+    post:
+      consumes:
+      - application/json
+      description: Add new user to the team.
+      parameters:
+      - description: Enter user id, team id and role id
+        in: body
+        name: model
+        required: true
+        schema:
+          $ref: '#/definitions/database.Model'
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: Add user
+      tags:
+      - user
+  /user:
+    post:
+      consumes:
+      - application/json
+      description: Create an user from json file with user as a key and structure
+        as a value.
+      parameters:
+      - description: User information
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/database.Model'
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Model'
+        "406":
+          description: Not Acceptable
+          schema: {}
+      summary: Create an user
+      tags:
+      - admin
+swagger: "2.0"

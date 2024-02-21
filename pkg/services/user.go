@@ -20,24 +20,31 @@ func (a User) AddUserToTeam(model database.Model) error {
 	user := database.User(model.User)
 	role := database.Role(model.Role)
 	ok, err := a.repo.CanEditTeamUser(model.CurrentUser.Id, team.Id)
-	if !ok {
-		return errors.New("user can't edit team")
-	}
 	if err != nil {
 		return err
 	}
+	if !ok {
+		return errors.New("user can't edit team")
+	}
+
 	return a.repo.AddUserToTeam(user.Id, team.Id, role.Id)
 }
 
 func (a User) CreateProject(model database.Model) error {
 	project := database.Project(model.Project)
-	ok, err := a.repo.CanEditTeamProject(model.CurrentUser.Id, model.Team.Id)
-	if !ok {
-		return errors.New("user can't edit project")
+	if mistakes := project.IsValid(); len(mistakes) > 0 {
+		for _, m := range mistakes {
+			return errors.New(m)
+		}
 	}
+	ok, err := a.repo.CanEditTeamProject(model.CurrentUser.Id, model.Team.Id)
 	if err != nil {
 		return err
 	}
+	if !ok {
+		return errors.New("user can't edit project")
+	}
+
 	return a.repo.CreateProject(project, model.Team.Id)
 }
 
