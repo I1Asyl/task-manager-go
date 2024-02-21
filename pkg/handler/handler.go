@@ -54,8 +54,9 @@ func (h Handler) Assign() *gin.Engine {
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	router.GET("/login", h.auth.login)
-	router.GET("/refresh", h.auth.refreshToken)
+	router.POST("/login", h.auth.login)
+
+	router.POST("/refresh", h.auth.refreshToken)
 	authorized := router.Group("")
 	{
 		authorized.Use(h.UserMiddleware())
@@ -63,7 +64,7 @@ func (h Handler) Assign() *gin.Engine {
 		authorized.GET("/check", h.user.checkUser)
 
 		authorized.POST("/teamUser", h.user.addUserToTeam)
-		authorized.GET("/teamUser", h.user.getTeamMembers)
+		authorized.GET("/teamUser/:id", h.user.getTeamMembers)
 
 		authorized.POST("/project", h.user.createProject)
 	}

@@ -27,7 +27,7 @@ func NewAuth(services services.Service) *Auth {
 // @Param        user body database.Model  true  "User form"
 // @Success      200  {object}  string
 // @Failure      400  {object}  error
-// @Router       /login [get]
+// @Router       /login [post]
 func (a Auth) login(ctx *gin.Context) {
 	var user database.Model
 	if err := ctx.BindJSON(&user); err != nil {
@@ -55,7 +55,7 @@ func (a Auth) login(ctx *gin.Context) {
 // @Param        refresh body token true "Refresh token"
 // @Success      200  {object}  string
 // @Failure      400  {object}  error
-// @Router       /refresh [get]
+// @Router       /refresh [post]
 func (a Auth) refreshToken(ctx *gin.Context) {
 	var user token
 	if err := ctx.BindJSON(&user); err != nil {

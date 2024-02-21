@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/I1Asyl/task-manager-go/database"
 	"github.com/I1Asyl/task-manager-go/pkg/repositories"
@@ -50,5 +51,14 @@ func (a User) CreateProject(model database.Model) error {
 
 func (a User) GetTeamMembers(model database.Model) ([]database.User, error) {
 	team := database.Team(model.Team)
+
+	ok, err := a.repo.CanEditTeamUser(model.CurrentUser.Id, team.Id)
+	fmt.Println(model.CurrentUser.Id, team.Id, ok, err)
+	if err != nil {
+		return []database.User{}, err
+	}
+	if !ok {
+		return []database.User{}, errors.New("user can't edit or view team")
+	}
 	return a.repo.GetTeamMembers(team.Id)
 }

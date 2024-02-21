@@ -55,7 +55,7 @@ const docTemplate = `{
             }
         },
         "/login": {
-            "get": {
+            "post": {
                 "description": "Login user and return access and refresh tokens.",
                 "consumes": [
                     "application/json"
@@ -183,7 +183,7 @@ const docTemplate = `{
             }
         },
         "/refresh": {
-            "get": {
+            "post": {
                 "description": "Recieves refresh token as a json named \"token\" and return access and refresh tokens.",
                 "consumes": [
                     "application/json"
@@ -265,9 +265,42 @@ const docTemplate = `{
                 }
             }
         },
+        "/team/{team_id}": {
+            "delete": {
+                "description": "Delete a team by its id.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Dealete a team",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Team id",
+                        "name": "team_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Model"
+                        }
+                    },
+                    "406": {
+                        "description": "Not Acceptable",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/teamUser": {
-            "get": {
-                "description": "Get all users in the taeam",
+            "post": {
+                "description": "Add new user to the team.",
                 "consumes": [
                     "application/json"
                 ],
@@ -277,10 +310,10 @@ const docTemplate = `{
                 "tags": [
                     "user"
                 ],
-                "summary": "Get team members",
+                "summary": "Add user",
                 "parameters": [
                     {
-                        "description": "Enter team id",
+                        "description": "Enter user id, team id and role id",
                         "name": "model",
                         "in": "body",
                         "required": true,
@@ -308,28 +341,25 @@ const docTemplate = `{
                         "schema": {}
                     }
                 }
-            },
-            "post": {
-                "description": "Add new user to the team.",
-                "consumes": [
-                    "application/json"
-                ],
+            }
+        },
+        "/teamUser/{team_id}": {
+            "get": {
+                "description": "Get all users in the taeam",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "user"
                 ],
-                "summary": "Add user",
+                "summary": "Get team members",
                 "parameters": [
                     {
-                        "description": "Enter user id, team id and role id",
-                        "name": "model",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/database.Model"
-                        }
+                        "type": "integer",
+                        "description": "Enter team id",
+                        "name": "team_id",
+                        "in": "path",
+                        "required": true
                     },
                     {
                         "type": "string",

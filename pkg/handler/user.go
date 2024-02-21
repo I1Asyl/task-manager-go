@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"strconv"
 
 	"github.com/I1Asyl/task-manager-go/database"
 	"github.com/I1Asyl/task-manager-go/pkg/services"
@@ -50,19 +51,25 @@ func (a User) addUserToTeam(ctx *gin.Context) {
 // @Summary      Get team members
 // @Description  Get all users in the taeam
 // @Tags         user
-// @Accept       json
 // @Produce      json
-// @Param        model body database.Model true "Enter team id"
+// @Param        team_id  path int true "Enter team id"
 // @Param        Authorization header string  true  "Authorization header"
 // @Success      200  {object}  string
 // @Failure      400  {object}  error
-// @Router       /teamUser [get]
+// @Router       /teamUser/{team_id} [get]
 func (a User) getTeamMembers(ctx *gin.Context) {
 	var team database.Model
-	if err := ctx.BindJSON(&team); err != nil {
-		ctx.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
+	userId, exists := ctx.Get("userId")
+	if !exists {
+		panic(errors.New("no user id"))
+	}
+	team.CurrentUser.Id = userId.(int)
+	temp, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.AbortWithError(400, err)
 		return
 	}
+	team.Team.Id = temp
 	ans, err := a.services.GetTeamMembers(team)
 	if err != nil {
 		ctx.AbortWithError(400, err)

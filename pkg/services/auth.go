@@ -18,11 +18,12 @@ func NewAuthorization(repo *repositories.Repository) *Authorization {
 	return &Authorization{repo: repo}
 }
 
-func generateTokens(user database.User, firstToken string) (string, string, error) {
+func generateTokens(user database.User, firstToken string, expAccess int, expRefresh int) (string, string, error) {
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id":  user.Id,
 		"is_admin": user.IsAdmin,
-		"exp":      time.Now().Unix() + 60*60,
+		"exp":      expAccess,
+		//time.Now().Unix() + 60*60,
 	})
 	accessTokenString, err := accessToken.SignedString([]byte("secret"))
 	if err != nil {
@@ -33,7 +34,8 @@ func generateTokens(user database.User, firstToken string) (string, string, erro
 	}
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"first_token": firstToken,
-		"exp":         time.Now().Unix() + 60*60*24*30,
+		"exp":         expRefresh,
+		//time.Now().Unix() + 60*60*24*30,
 	})
 	refreshTokenTokenString, err := refreshToken.SignedString([]byte("secret"))
 	if err != nil {
@@ -67,7 +69,8 @@ func (a Authorization) RefreshToken(tokenString string) (string, string, error) 
 	if err != nil {
 		return "", "", err
 	}
-	access, refresh, err := generateTokens(user, firstToken)
+	expRefresh := int(claims["exp"].(float64))
+	access, refresh, err := generateTokens(user, firstToken, int(time.Now().Unix()+60*60), expRefresh)
 	if err != nil {
 		return "", "", err
 	}
@@ -153,7 +156,7 @@ func (a Authorization) Login(model database.Model) (string, string, map[string]s
 		return "", "", nil, err
 	}
 
-	access, refresh, er := generateTokens(user, "")
+	access, refresh, er := generateTokens(user, "", int(time.Now().Unix()+60*60), int(time.Now().Unix()+60*60*24*30))
 
 	if er != nil {
 		return "", "", nil, er

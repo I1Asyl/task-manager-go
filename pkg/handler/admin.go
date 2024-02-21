@@ -76,6 +76,15 @@ func (a Admin) createTeam(ctx *gin.Context) {
 	ctx.JSON(200, team)
 }
 
+// createTeam godoc
+// @Summary      Dealete a team
+// @Description  Delete a team by its id.
+// @Tags         admin
+// @Produce      json
+// @Param        team_id path int  true  "Team id"
+// @Success      200  {object}  database.Model
+// @Failure      406  {object}  error
+// @Router       /team/{team_id} [delete]
 func (a Admin) deleteTeam(ctx *gin.Context) {
 	model := database.Model{}
 	var err error

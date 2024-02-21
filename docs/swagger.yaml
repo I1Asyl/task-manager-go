@@ -109,7 +109,7 @@ paths:
       tags:
       - user
   /login:
-    get:
+    post:
       consumes:
       - application/json
       description: Login user and return access and refresh tokens.
@@ -194,7 +194,7 @@ paths:
       tags:
       - user
   /refresh:
-    get:
+    post:
       consumes:
       - application/json
       description: Recieves refresh token as a json named "token" and return access
@@ -250,36 +250,29 @@ paths:
       summary: Create a team
       tags:
       - admin
-  /teamUser:
-    get:
-      consumes:
-      - application/json
-      description: Get all users in the taeam
+  /team/{team_id}:
+    delete:
+      description: Delete a team by its id.
       parameters:
-      - description: Enter team id
-        in: body
-        name: model
+      - description: Team id
+        in: path
+        name: team_id
         required: true
-        schema:
-          $ref: '#/definitions/database.Model'
-      - description: Authorization header
-        in: header
-        name: Authorization
-        required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            type: string
-        "400":
-          description: Bad Request
+            $ref: '#/definitions/database.Model'
+        "406":
+          description: Not Acceptable
           schema: {}
-      summary: Get team members
+      summary: Dealete a team
       tags:
-      - user
+      - admin
+  /teamUser:
     post:
       consumes:
       - application/json
@@ -307,6 +300,33 @@ paths:
           description: Bad Request
           schema: {}
       summary: Add user
+      tags:
+      - user
+  /teamUser/{team_id}:
+    get:
+      description: Get all users in the taeam
+      parameters:
+      - description: Enter team id
+        in: path
+        name: team_id
+        required: true
+        type: integer
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: Get team members
       tags:
       - user
   /user:
