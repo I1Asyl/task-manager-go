@@ -21,13 +21,13 @@ func (a Middleware) UserMiddleware() gin.HandlerFunc {
 		header := c.GetHeader("Authorization")
 		headerParts := strings.Split(header, " ")
 		if headerParts[0] != "Bearer" || len(headerParts) != 2 || !a.verifyUser(headerParts[1]) {
-			c.AbortWithStatusJSON(401, gin.H{"error": "unauthorized"})
+			c.AbortWithStatusJSON(401, gin.H{"message": "unauthorized"})
 			return
 		}
 
 		id, err := a.getUserIdByToken(headerParts[1])
 		if err != nil {
-			c.AbortWithStatusJSON(401, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(401, gin.H{"error": "unauthorized"})
 		}
 		c.Set("userId", id)
 

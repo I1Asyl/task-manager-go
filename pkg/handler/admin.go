@@ -25,8 +25,10 @@ func NewAdmin(service services.Service) *Admin {
 // @Produce      json
 // @Param        user body database.Model  true  "User information"
 // @Param        Authorization header string  true  "Authorization header"
-// @Success      200  {object}  database.Model
-// @Failure      406  {object}  error
+// @Success      200  {object}  string
+// @Failure      400  {object}  string
+// @Failure      401  {object}  string
+// @Failure      422  {object}  string
 // @Router       /user [post]
 func (a Admin) createUser(ctx *gin.Context) {
 	var user database.Model
@@ -39,10 +41,10 @@ func (a Admin) createUser(ctx *gin.Context) {
 		if err != nil {
 			ctx.Error(err)
 		}
-		ctx.AbortWithStatusJSON(400, mistakes)
+		ctx.AbortWithStatusJSON(422, gin.H{"message": "Could not login", "errors": mistakes})
 		return
 	}
-	ctx.JSON(200, user)
+	ctx.JSON(200, gin.H{"message": "User created"})
 }
 
 // createTeam godoc
@@ -53,8 +55,10 @@ func (a Admin) createUser(ctx *gin.Context) {
 // @Produce      json
 // @Param        team body database.Model  true  "Team information"
 // @Param        Authorization header string  true  "Authorization header"
-// @Success      200  {object}  database.Model
-// @Failure      406  {object}  error
+// @Success      200  {object}  string
+// @Failure      400  {object}  string
+// @Failure      401  {object}  string
+// @Failure      422  {object}  string
 // @Router       /team [post]
 func (a Admin) createTeam(ctx *gin.Context) {
 	var team database.Model
@@ -70,10 +74,10 @@ func (a Admin) createTeam(ctx *gin.Context) {
 		if err != nil {
 			ctx.Error(err)
 		}
-		ctx.AbortWithStatusJSON(400, mistakes)
+		ctx.AbortWithStatusJSON(422, gin.H{"message": "Could not login", "errors": mistakes})
 		return
 	}
-	ctx.JSON(200, team)
+	ctx.JSON(200, gin.H{"message": "Team created"})
 }
 
 // createTeam godoc
@@ -82,20 +86,23 @@ func (a Admin) createTeam(ctx *gin.Context) {
 // @Tags         admin
 // @Produce      json
 // @Param        team_id path int  true  "Team id"
-// @Success      200  {object}  database.Model
-// @Failure      406  {object}  error
+// @Success      200  {object}  string
+// @Failure      400  {object}  string
+// @Failure      401  {object}  string
+// @Failure      500  {object}  string
 // @Router       /team/{team_id} [delete]
 func (a Admin) deleteTeam(ctx *gin.Context) {
 	model := database.Model{}
 	var err error
 	model.Team.Id, err = strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		ctx.AbortWithError(400, err)
+		ctx.AbortWithError(500, err)
 		return
 	}
 	if err := a.services.DeleteTeam(model); err != nil {
-		ctx.AbortWithError(400, err)
-
+		ctx.Error(err)
+		ctx.AbortWithStatusJSON(400, gin.H{"message": "Could not delete team"})
+		return
 	}
-	ctx.JSON(200, nil)
+	ctx.JSON(200, gin.H{"message": "Team deleted"})
 }

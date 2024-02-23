@@ -138,9 +138,10 @@ paths:
           description: OK
           schema:
             type: string
-        "400":
-          description: Bad Request
-          schema: {}
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
       summary: Check user
       tags:
       - user
@@ -165,7 +166,12 @@ paths:
             type: string
         "400":
           description: Bad Request
-          schema: {}
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
       summary: Login
       tags:
       - auth
@@ -195,7 +201,16 @@ paths:
             type: string
         "400":
           description: Bad Request
-          schema: {}
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
       summary: log out
       tags:
       - user
@@ -225,7 +240,16 @@ paths:
             type: string
         "400":
           description: Bad Request
-          schema: {}
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
       summary: Create project
       tags:
       - user
@@ -251,7 +275,12 @@ paths:
             type: string
         "400":
           description: Bad Request
-          schema: {}
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
       summary: Refresh token
       tags:
       - auth
@@ -281,7 +310,16 @@ paths:
             type: string
         "400":
           description: Bad Request
-          schema: {}
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
       summary: create a task
       tags:
       - user
@@ -309,10 +347,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Model'
-        "406":
-          description: Not Acceptable
-          schema: {}
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
       summary: Create a team
       tags:
       - admin
@@ -331,10 +378,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Model'
-        "406":
-          description: Not Acceptable
-          schema: {}
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
       summary: Dealete a team
       tags:
       - admin
@@ -362,10 +418,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Model'
-        "406":
-          description: Not Acceptable
-          schema: {}
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
       summary: Create an user
       tags:
       - admin
@@ -395,7 +460,16 @@ paths:
             type: string
         "400":
           description: Bad Request
-          schema: {}
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
       summary: Add user
       tags:
       - user
@@ -422,7 +496,16 @@ paths:
             type: string
         "400":
           description: Bad Request
-          schema: {}
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
       summary: Get team members
       tags:
       - user

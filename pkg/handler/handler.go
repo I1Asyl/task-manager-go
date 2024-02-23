@@ -56,7 +56,6 @@ func (h Handler) Assign() *gin.Engine {
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	router.POST("/login", h.auth.login)
-
 	router.POST("/refresh", h.auth.refreshToken)
 	authorized := router.Group("")
 	{

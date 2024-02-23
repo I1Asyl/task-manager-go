@@ -62,6 +62,7 @@ func (a User) GetTeamMembers(model database.Model) ([]database.User, error) {
 
 func (a User) CreateTask(model database.Model) error {
 	task := database.Task(model.Task)
+	task.AssignerId = model.CurrentUser.Id
 	if mistakes := task.IsValid(); len(mistakes) > 0 {
 		for _, m := range mistakes {
 			return errors.New(m)

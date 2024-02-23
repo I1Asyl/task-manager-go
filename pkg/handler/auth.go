@@ -26,21 +26,22 @@ func NewAuth(services services.Service) *Auth {
 // @Produce      json
 // @Param        user body database.Model  true  "User form"
 // @Success      200  {object}  string
-// @Failure      400  {object}  error
+// @Failure      400  {object}  string
+// @Failure      422  {object}  string
 // @Router       /login [post]
 func (a Auth) login(ctx *gin.Context) {
 	var user database.Model
 	if err := ctx.BindJSON(&user); err != nil {
-		ctx.AbortWithError(400, err)
+		ctx.Error(err)
+		ctx.AbortWithStatusJSON(400, gin.H{"message": "Error with input data"})
 		return
 	}
 	access, refresh, mistakes, err := a.services.Login(user)
-	if err != nil {
-		ctx.AbortWithError(400, err)
-		return
-	}
-	if len(mistakes) > 0 {
-		ctx.AbortWithStatusJSON(400, mistakes)
+	if err != nil || len(mistakes) > 0 {
+		if err != nil {
+			ctx.Error(err)
+		}
+		ctx.AbortWithStatusJSON(422, gin.H{"message": "Could not login", "errors": mistakes})
 		return
 	}
 	ctx.JSON(200, gin.H{"access": access, "refresh": refresh})
@@ -54,13 +55,14 @@ func (a Auth) login(ctx *gin.Context) {
 // @Produce      json
 // @Param        refresh body token true "Refresh token"
 // @Success      200  {object}  string
-// @Failure      400  {object}  error
+// @Failure      400  {object}  string
+// @Failure      422  {object}  string
 // @Router       /refresh [post]
 func (a Auth) refreshToken(ctx *gin.Context) {
 	var user token
 	if err := ctx.BindJSON(&user); err != nil {
 		ctx.Error(err)
-		ctx.AbortWithStatusJSON(400, gin.H{"error": "Given data is not corect"})
+		ctx.AbortWithStatusJSON(400, gin.H{"message": "Error with input data"})
 		return
 	}
 

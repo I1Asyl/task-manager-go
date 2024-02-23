@@ -2,7 +2,6 @@ package handler
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 
 	"github.com/I1Asyl/task-manager-go/database"
@@ -27,7 +26,9 @@ func NewUser(services services.Service) *User {
 // @Param        model body database.Model true "Enter user id, team id and role id"
 // @Param        Authorization header string  true  "Authorization header"
 // @Success      200  {object}  string
-// @Failure      400  {object}  error
+// @Failure      400  {object}  string
+// @Failure      401  {object}  string
+// @Failure      422  {object}  string
 // @Router       /userTeam [post]
 func (a User) addUserToTeam(ctx *gin.Context) {
 	userId, exists := ctx.Get("userId")
@@ -38,12 +39,15 @@ func (a User) addUserToTeam(ctx *gin.Context) {
 	user.CurrentUser.Id = userId.(int)
 
 	if err := ctx.BindJSON(&user); err != nil {
-		ctx.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
+		ctx.Error(err)
+		ctx.AbortWithStatusJSON(400, gin.H{"message": "Error with input data"})
 		return
 	}
 
 	if err := a.services.AddUserToTeam(user); err != nil {
-		ctx.AbortWithError(400, err)
+		ctx.Error(err)
+		ctx.AbortWithStatusJSON(422, gin.H{"message": "Could not add user to the team"})
+		return
 	}
 	ctx.JSON(200, user)
 }
@@ -56,7 +60,9 @@ func (a User) addUserToTeam(ctx *gin.Context) {
 // @Param        team_id  path int true "Enter team id"
 // @Param        Authorization header string  true  "Authorization header"
 // @Success      200  {object}  string
-// @Failure      400  {object}  error
+// @Failure      400  {object}  string
+// @Failure      401  {object}  string
+// @Failure      422  {object}  string
 // @Router       /userTeam/{team_id} [get]
 func (a User) getTeamMembers(ctx *gin.Context) {
 	var team database.Model
@@ -67,13 +73,15 @@ func (a User) getTeamMembers(ctx *gin.Context) {
 	team.CurrentUser.Id = userId.(int)
 	temp, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		ctx.AbortWithError(400, err)
+		ctx.AbortWithError(500, err)
 		return
 	}
 	team.Team.Id = temp
 	ans, err := a.services.GetTeamMembers(team)
 	if err != nil {
-		ctx.AbortWithError(400, err)
+		ctx.Error(err)
+		ctx.AbortWithStatusJSON(422, gin.H{"message": "Could not get team members"})
+		return
 	}
 	ctx.JSON(200, ans)
 }
@@ -87,12 +95,15 @@ func (a User) getTeamMembers(ctx *gin.Context) {
 // @Param        model body database.Model true "Enter project info and team id"
 // @Param        Authorization header string  true  "Authorization header"
 // @Success      200  {object}  string
-// @Failure      400  {object}  error
+// @Failure      400  {object}  string
+// @Failure      401  {object}  string
+// @Failure      422  {object}  string
 // @Router       /project [post]
 func (a User) createProject(ctx *gin.Context) {
 	var project database.Model
 	if err := ctx.BindJSON(&project); err != nil {
-		ctx.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
+		ctx.Error(err)
+		ctx.AbortWithStatusJSON(400, gin.H{"message": "Error with input data"})
 		return
 	}
 	userId, exists := ctx.Get("userId")
@@ -101,8 +112,9 @@ func (a User) createProject(ctx *gin.Context) {
 	}
 	project.CurrentUser.Id = userId.(int)
 	if err := a.services.CreateProject(project); err != nil {
-		fmt.Println(err)
-		ctx.AbortWithError(401, err)
+		ctx.Error(err)
+		ctx.AbortWithStatusJSON(422, gin.H{"message": "Could not create a project"})
+		return
 	}
 	ctx.JSON(200, project)
 }
@@ -115,7 +127,7 @@ func (a User) createProject(ctx *gin.Context) {
 // @Produce      json
 // @Param        Authorization header string  true  "Authorization header"
 // @Success      200  {object}  string
-// @Failure      400  {object}  error
+// @Failure      401  {object}  string
 // @Router       /check [get]
 func (a User) checkUser(ctx *gin.Context) {
 	_, exists := ctx.Get("userId")
@@ -134,17 +146,20 @@ func (a User) checkUser(ctx *gin.Context) {
 // @Param        model body token true "Enter refresh token"
 // @Param        Authorization header string  true  "Authorization header"
 // @Success      200  {object}  string
-// @Failure      400  {object}  error
+// @Failure      400  {object}  string
+// @Failure      401  {object}  string
+// @Failure      422  {object}  string
 // @Router       /logout [post]
 func (a User) logout(ctx *gin.Context) {
 	var user token
 	if err := ctx.BindJSON(&user); err != nil {
 		ctx.Error(err)
-		ctx.AbortWithStatusJSON(400, gin.H{"error": "Given data is not corect"})
+		ctx.AbortWithStatusJSON(400, gin.H{"message": "Error with input data"})
 		return
 	}
 	if err := a.services.Logout(user.Token); err != nil {
-		ctx.AbortWithError(400, err)
+		ctx.Error(err)
+		ctx.AbortWithStatusJSON(422, gin.H{"message": "Could not log out"})
 		return
 	}
 	ctx.JSON(200, gin.H{"message": "success"})
@@ -159,12 +174,15 @@ func (a User) logout(ctx *gin.Context) {
 // @Param        model body database.Model true "Enter task info and team id"
 // @Param        Authorization header string  true  "Authorization header"
 // @Success      200  {object}  string
-// @Failure      400  {object}  error
+// @Failure      400  {object}  string
+// @Failure      401  {object}  string
+// @Failure      422  {object}  string
 // @Router       /task [post]
 func (a User) createTask(ctx *gin.Context) {
 	var task database.Model
 	if err := ctx.BindJSON(&task); err != nil {
-		ctx.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
+		ctx.Error(err)
+		ctx.AbortWithStatusJSON(400, gin.H{"message": "Error with input data"})
 		return
 	}
 	userId, exists := ctx.Get("userId")
@@ -172,9 +190,10 @@ func (a User) createTask(ctx *gin.Context) {
 		panic(errors.New("no user id"))
 	}
 	task.CurrentUser.Id = userId.(int)
-	task.Task.AssignerId = userId.(int)
 	if err := a.services.CreateTask(task); err != nil {
-		ctx.AbortWithError(400, err)
+		ctx.Error(err)
+		ctx.AbortWithStatusJSON(422, gin.H{"message": "Could not create a task"})
+		return
 	}
 	ctx.JSON(200, task)
 }
