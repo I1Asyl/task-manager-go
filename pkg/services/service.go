@@ -24,6 +24,7 @@ type user interface {
 	AddUserToTeam(model database.Model) error
 	GetTeamMembers(model database.Model) ([]database.User, error)
 	CreateProject(model database.Model) error
+	CreateTask(model database.Model) error
 }
 
 type Service struct {

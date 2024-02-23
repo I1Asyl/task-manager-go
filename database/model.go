@@ -14,6 +14,20 @@ type Model struct {
 	Team        Team     `json:"team" db:"team"`
 	Role        Role     `json:"role"`
 	Project     Project  `json:"project"`
+	Task        Task     `json:"task"`
+	UserTeam    UserTeam `json:"user_team"`
+}
+
+type Task struct {
+	Id            int    `json:"id" db:"XX"`
+	UserId        int    `json:"user_id" db:"XXXXX"`
+	AssignerId    int    `json:"assigner_id" db:"XXXXX"`
+	StartTime     string `json:"start_time" db:"XXXXX"`
+	EndTime       string `json:"end_time" db:"XXXXX"`
+	Name          string `json:"name" db:"XXXX"`
+	Description   string `json:"description" db:"XXXXXXXXXXX"`
+	ProjectId     int    `json:"project_id" db:"XXXXXXXXXX"`
+	CurrentStatus string `json:"current_status" db:"XXXXXX"`
 }
 
 type User struct {
@@ -28,8 +42,9 @@ type User struct {
 }
 
 type Team struct {
-	Id   int    `json:"id" db:"id"`
-	Name string `json:"name" db:"name"`
+	Id          int    `json:"id" db:"id"`
+	Name        string `json:"name" db:"name"`
+	Description string `json:"description" db:"XXXXXXXXXXX"`
 }
 
 type UserForm struct {
@@ -61,6 +76,23 @@ type Project struct {
 	Description   string `json:"description" db:"description"`
 	TeamId        int    `json:"team_id" db:"XXXXX"`
 	CurrentStatus string `json:"current_status" db:"XXXXXX"`
+}
+
+func (t Task) IsValid() map[string]string {
+	errors := make(map[string]string)
+	if err := validName(t.Name); err != nil {
+		errors["name"] = err.Error()
+	}
+	if err := validName(t.Description); err != nil {
+		errors["description"] = err.Error()
+	}
+	if t.ProjectId == 0 {
+		errors["project_id"] = "Project id is required"
+	}
+	if t.AssignerId == 0 {
+		errors["assigner_id"] = "Assigner id is required"
+	}
+	return errors
 }
 
 func (u UserForm) IsValid() map[string]string {

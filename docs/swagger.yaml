@@ -8,12 +8,16 @@ definitions:
         $ref: '#/definitions/database.Project'
       role:
         $ref: '#/definitions/database.Role'
+      task:
+        $ref: '#/definitions/database.Task'
       team:
         $ref: '#/definitions/database.Team'
       user:
         $ref: '#/definitions/database.User'
       user_form:
         $ref: '#/definitions/database.UserForm'
+      user_team:
+        $ref: '#/definitions/database.UserTeam'
     type: object
   database.Project:
     properties:
@@ -37,8 +41,31 @@ definitions:
       name:
         type: string
     type: object
+  database.Task:
+    properties:
+      assigner_id:
+        type: integer
+      current_status:
+        type: string
+      description:
+        type: string
+      end_time:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      project_id:
+        type: integer
+      start_time:
+        type: string
+      user_id:
+        type: integer
+    type: object
   database.Team:
     properties:
+      description:
+        type: string
       id:
         type: integer
       name:
@@ -69,6 +96,15 @@ definitions:
         type: string
       username:
         type: string
+    type: object
+  database.UserTeam:
+    properties:
+      role_id:
+        type: integer
+      team_id:
+        type: integer
+      user_id:
+        type: integer
     type: object
   handler.token:
     properties:
@@ -219,6 +255,36 @@ paths:
       summary: Refresh token
       tags:
       - auth
+  /task:
+    post:
+      consumes:
+      - application/json
+      description: create a task and assign it to someone and project.
+      parameters:
+      - description: Enter task info and team id
+        in: body
+        name: model
+        required: true
+        schema:
+          $ref: '#/definitions/database.Model'
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: create a task
+      tags:
+      - user
   /team:
     post:
       consumes:
@@ -272,63 +338,6 @@ paths:
       summary: Dealete a team
       tags:
       - admin
-  /teamUser:
-    post:
-      consumes:
-      - application/json
-      description: Add new user to the team.
-      parameters:
-      - description: Enter user id, team id and role id
-        in: body
-        name: model
-        required: true
-        schema:
-          $ref: '#/definitions/database.Model'
-      - description: Authorization header
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema: {}
-      summary: Add user
-      tags:
-      - user
-  /teamUser/{team_id}:
-    get:
-      description: Get all users in the taeam
-      parameters:
-      - description: Enter team id
-        in: path
-        name: team_id
-        required: true
-        type: integer
-      - description: Authorization header
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema: {}
-      summary: Get team members
-      tags:
-      - user
   /user:
     post:
       consumes:
@@ -360,4 +369,61 @@ paths:
       summary: Create an user
       tags:
       - admin
+  /userTeam:
+    post:
+      consumes:
+      - application/json
+      description: Add new user to the team.
+      parameters:
+      - description: Enter user id, team id and role id
+        in: body
+        name: model
+        required: true
+        schema:
+          $ref: '#/definitions/database.Model'
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: Add user
+      tags:
+      - user
+  /userTeam/{team_id}:
+    get:
+      description: Get all users in the taeam
+      parameters:
+      - description: Enter team id
+        in: path
+        name: team_id
+        required: true
+        type: integer
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: Get team members
+      tags:
+      - user
 swagger: "2.0"

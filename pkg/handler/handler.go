@@ -25,6 +25,7 @@ type user interface {
 	logout(ctx *gin.Context)
 	checkUser(ctx *gin.Context)
 	createProject(ctx *gin.Context)
+	createTask(ctx *gin.Context)
 }
 
 type middleware interface {
@@ -63,9 +64,10 @@ func (h Handler) Assign() *gin.Engine {
 		authorized.POST("/logout", h.user.logout)
 		authorized.GET("/check", h.user.checkUser)
 
-		authorized.POST("/teamUser", h.user.addUserToTeam)
-		authorized.GET("/teamUser/:id", h.user.getTeamMembers)
+		authorized.POST("/userTeam", h.user.addUserToTeam)
+		authorized.GET("/userTeam/:id", h.user.getTeamMembers)
 
+		authorized.POST("/task", h.user.createTask)
 		authorized.POST("/project", h.user.createProject)
 	}
 

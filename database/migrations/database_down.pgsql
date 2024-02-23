@@ -1,3 +1,4 @@
+DROP TABLE tasks;
 DROP TABLE sessions;
 DROP TABLE projects;
 DROP TABLE users_teams;

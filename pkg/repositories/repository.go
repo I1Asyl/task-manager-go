@@ -26,7 +26,9 @@ type user interface {
 	AddUserToTeam(userId int, teamId int, roleId int) error
 	CanEditTeamUser(userId int, teamId int) (bool, error)
 	CanEditTeamProject(userId int, teamId int) (bool, error)
-	CreateProject(project database.Project, teamId int) error
+	CreateProject(project database.Project) error
+	CreateTask(task database.Task) error
+	GetTeamByProjectId(projectId int) (int, error)
 }
 
 // Repository structure to c

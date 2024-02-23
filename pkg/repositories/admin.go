@@ -23,7 +23,7 @@ func (a Admin) CreateUser(user database.User) error {
 }
 
 func (a Admin) CreateTeam(team database.Team) error {
-	_, err := a.db.Query("INSERT INTO teams (name) VALUES ($1)", team.Name)
+	_, err := a.db.Query("INSERT INTO teams (name, description) VALUES ($1, $2)", team.Name, team.Description)
 	if err != nil {
 		return err
 	}

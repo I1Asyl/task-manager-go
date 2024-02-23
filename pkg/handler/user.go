@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/I1Asyl/task-manager-go/database"
@@ -27,7 +28,7 @@ func NewUser(services services.Service) *User {
 // @Param        Authorization header string  true  "Authorization header"
 // @Success      200  {object}  string
 // @Failure      400  {object}  error
-// @Router       /teamUser [post]
+// @Router       /userTeam [post]
 func (a User) addUserToTeam(ctx *gin.Context) {
 	userId, exists := ctx.Get("userId")
 	if !exists {
@@ -56,7 +57,7 @@ func (a User) addUserToTeam(ctx *gin.Context) {
 // @Param        Authorization header string  true  "Authorization header"
 // @Success      200  {object}  string
 // @Failure      400  {object}  error
-// @Router       /teamUser/{team_id} [get]
+// @Router       /userTeam/{team_id} [get]
 func (a User) getTeamMembers(ctx *gin.Context) {
 	var team database.Model
 	userId, exists := ctx.Get("userId")
@@ -100,7 +101,8 @@ func (a User) createProject(ctx *gin.Context) {
 	}
 	project.CurrentUser.Id = userId.(int)
 	if err := a.services.CreateProject(project); err != nil {
-		ctx.AbortWithError(400, err)
+		fmt.Println(err)
+		ctx.AbortWithError(401, err)
 	}
 	ctx.JSON(200, project)
 }
@@ -146,4 +148,33 @@ func (a User) logout(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, gin.H{"message": "success"})
+}
+
+// logout godoc
+// @Summary      create a task
+// @Description  create a task and assign it to someone and project.
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Param        model body database.Model true "Enter task info and team id"
+// @Param        Authorization header string  true  "Authorization header"
+// @Success      200  {object}  string
+// @Failure      400  {object}  error
+// @Router       /task [post]
+func (a User) createTask(ctx *gin.Context) {
+	var task database.Model
+	if err := ctx.BindJSON(&task); err != nil {
+		ctx.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	userId, exists := ctx.Get("userId")
+	if !exists {
+		panic(errors.New("no user id"))
+	}
+	task.CurrentUser.Id = userId.(int)
+	task.Task.AssignerId = userId.(int)
+	if err := a.services.CreateTask(task); err != nil {
+		ctx.AbortWithError(400, err)
+	}
+	ctx.JSON(200, task)
 }

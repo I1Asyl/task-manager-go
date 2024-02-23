@@ -220,6 +220,51 @@ const docTemplate = `{
                 }
             }
         },
+        "/task": {
+            "post": {
+                "description": "create a task and assign it to someone and project.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "create a task",
+                "parameters": [
+                    {
+                        "description": "Enter task info and team id",
+                        "name": "model",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.Model"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/team": {
             "post": {
                 "description": "Create an team from json file with team as a key and structure as a value.",
@@ -298,91 +343,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/teamUser": {
-            "post": {
-                "description": "Add new user to the team.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "Add user",
-                "parameters": [
-                    {
-                        "description": "Enter user id, team id and role id",
-                        "name": "model",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/database.Model"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization header",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/teamUser/{team_id}": {
-            "get": {
-                "description": "Get all users in the taeam",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "Get team members",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Enter team id",
-                        "name": "team_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization header",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {}
-                    }
-                }
-            }
-        },
         "/user": {
             "post": {
                 "description": "Create an user from json file with user as a key and structure as a value.",
@@ -427,6 +387,91 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/userTeam": {
+            "post": {
+                "description": "Add new user to the team.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Add user",
+                "parameters": [
+                    {
+                        "description": "Enter user id, team id and role id",
+                        "name": "model",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.Model"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/userTeam/{team_id}": {
+            "get": {
+                "description": "Get all users in the taeam",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get team members",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Enter team id",
+                        "name": "team_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -442,6 +487,9 @@ const docTemplate = `{
                 "role": {
                     "$ref": "#/definitions/database.Role"
                 },
+                "task": {
+                    "$ref": "#/definitions/database.Task"
+                },
                 "team": {
                     "$ref": "#/definitions/database.Team"
                 },
@@ -450,6 +498,9 @@ const docTemplate = `{
                 },
                 "user_form": {
                     "$ref": "#/definitions/database.UserForm"
+                },
+                "user_team": {
+                    "$ref": "#/definitions/database.UserTeam"
                 }
             }
         },
@@ -487,9 +538,44 @@ const docTemplate = `{
                 }
             }
         },
+        "database.Task": {
+            "type": "object",
+            "properties": {
+                "assigner_id": {
+                    "type": "integer"
+                },
+                "current_status": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "project_id": {
+                    "type": "integer"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "database.Team": {
             "type": "object",
             "properties": {
+                "description": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -535,6 +621,20 @@ const docTemplate = `{
                 },
                 "username": {
                     "type": "string"
+                }
+            }
+        },
+        "database.UserTeam": {
+            "type": "object",
+            "properties": {
+                "role_id": {
+                    "type": "integer"
+                },
+                "team_id": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },
