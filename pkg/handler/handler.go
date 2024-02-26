@@ -71,7 +71,7 @@ func (h Handler) Assign() *gin.Engine {
 
 		authorized.POST("/task", h.user.createTask)
 		authorized.GET("/task", h.user.getTasks)
-		authorized.PUT("/task/:id", h.user.updateTask)
+		authorized.PUT("/task", h.user.updateTask)
 
 		authorized.POST("/project", h.user.createProject)
 		authorized.GET("/project/:id/task", h.user.getTasksByProject)

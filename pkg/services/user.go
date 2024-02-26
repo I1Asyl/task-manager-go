@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/I1Asyl/task-manager-go/database"
 	"github.com/I1Asyl/task-manager-go/pkg/repositories"
@@ -93,7 +92,6 @@ func (a User) GetTasksByProject(model database.Model) ([]database.Task, error) {
 	project.TeamId, _ = a.repo.GetTeamByProjectId(project.Id)
 
 	ok, err := a.repo.IsInTeam(model.CurrentUser.Id, project.TeamId)
-	fmt.Println(model.CurrentUser.Id, project.TeamId, project.Id, ok, err)
 	if err != nil {
 		return []database.Task{}, err
 	}
@@ -110,10 +108,9 @@ func (a User) GetTasks(model database.Model) ([]database.Task, error) {
 func (a User) UpdateTask(model database.Model) (map[string]string, error) {
 	task := database.Task(model.Task)
 	if mistakes := task.IsValid(2); len(mistakes) > 0 {
-		for _, m := range mistakes {
-			return nil, errors.New(m)
-		}
+		return mistakes, nil
 	}
+
 	ok, err := a.repo.CanEditTask(model.CurrentUser.Id, task.Id)
 	if err != nil {
 		return nil, err

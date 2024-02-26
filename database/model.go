@@ -83,7 +83,7 @@ func isValidForUpdate(allNames []string, allValues []interface{}, allFunctions [
 	values := []interface{}{}
 	functions := []func(interface{}) error{}
 	for i := 0; i < len(allValues); i++ {
-		if allValues[i] != nil {
+		if allValues[i] != 0 && allValues[i] != "" && allValues != nil {
 			names = append(names, allNames[i])
 			values = append(values, allValues[i])
 			functions = append(functions, allFunctions[i])

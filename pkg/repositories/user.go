@@ -59,7 +59,6 @@ func (a User) IsInTeam(userId int, teamId int) (bool, error) {
 
 func (a User) CreateTask(task database.Task) error {
 	_, err := a.db.Query("INSERT INTO tasks (name, description, project_id, current_status, user_id, assigner_id, start_time) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *", task.Name, task.Description, task.ProjectId, task.CurrentStatus, task.UserId, task.AssignerId, time.Now())
-	fmt.Println(err)
 
 	return err
 }
@@ -115,11 +114,12 @@ func (a User) Update(allColumnNames []string, allColumnValues []interface{}, id 
 	columnNames := []string{}
 	columnValues := []interface{}{}
 	for i, columnValue := range allColumnValues {
-		if columnValue != nil {
+		if columnValue != 0 && columnValue != "" {
 			columnNames = append(columnNames, allColumnNames[i])
 			columnValues = append(columnValues, columnValue)
 		}
 	}
+
 	query := "UPDATE tasks SET "
 	for i, columnName := range columnNames {
 		query += columnName + " = $" + fmt.Sprint(i+1)
@@ -128,6 +128,7 @@ func (a User) Update(allColumnNames []string, allColumnValues []interface{}, id 
 		}
 	}
 	query += " WHERE id = $" + fmt.Sprint(len(columnValues)+1)
+
 	columnValues = append(columnValues, id)
 	_, err := a.db.Query(query, columnValues...)
 	return err
@@ -142,6 +143,6 @@ func (a User) UpdateTask(task database.Task) error {
 
 func (a User) CanEditTask(userId int, taskId int) (bool, error) {
 	var canEdit bool
-	err := a.db.QueryRow("SELECT EXISTS (SELECT 1 FROM tasks WHERE task_id = $2 AND (assigner_id = $1 OR user_id = $1))", userId, taskId).Scan(&canEdit)
+	err := a.db.QueryRow("SELECT EXISTS (SELECT 1 FROM tasks WHERE id = $2 AND (assigner_id = $1 OR user_id = $1))", userId, taskId).Scan(&canEdit)
 	return canEdit, err
 }

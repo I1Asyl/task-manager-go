@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/I1Asyl/task-manager-go/database"
 )
@@ -38,7 +37,6 @@ func (a Admin) CreateTeam(team database.Team) error {
 	for res.Next() {
 		var user database.User
 		res.Scan(&user.Id)
-		fmt.Println(team.Id, user.Id)
 		_, err := a.db.Query("INSERT INTO users_teams (team_id, user_id, role_id) VALUES ($1, $2, 1)", team.Id, user.Id)
 		if err != nil {
 			return err

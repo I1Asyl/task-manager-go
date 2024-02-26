@@ -2,7 +2,6 @@ package handler
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 
 	"github.com/I1Asyl/task-manager-go/database"
@@ -113,7 +112,9 @@ func (a User) createProject(ctx *gin.Context) {
 	}
 	project.CurrentUser.Id = userId.(int)
 	if mistakes, err := a.services.CreateProject(project); err != nil || len(mistakes) > 0 {
-		ctx.Error(err)
+		if err != nil {
+			ctx.Error(err)
+		}
 		ctx.AbortWithStatusJSON(422, gin.H{"message": "Could not create a project", "errors": mistakes})
 		return
 	}
@@ -192,7 +193,9 @@ func (a User) createTask(ctx *gin.Context) {
 	}
 	task.CurrentUser.Id = userId.(int)
 	if mistakes, err := a.services.CreateTask(task); err != nil || len(mistakes) > 0 {
-		ctx.Error(err)
+		if err != nil {
+			ctx.Error(err)
+		}
 		ctx.AbortWithStatusJSON(422, gin.H{"message": "Could not create a task", "errors": mistakes})
 		return
 	}
@@ -224,7 +227,6 @@ func (a User) getTasksByProject(ctx *gin.Context) {
 		return
 	}
 
-	fmt.Println(temp)
 	task.Project.Id = temp
 	ans, err := a.services.GetTasksByProject(task)
 	if err != nil {
@@ -240,13 +242,12 @@ func (a User) getTasksByProject(ctx *gin.Context) {
 // @Description  get all tasks from recieved user id
 // @Tags         user
 // @Produce      json
-// @Param        user_id  path int true "Enter user id"
 // @Param        Authorization header string  true  "Authorization header"
 // @Success      200  {object}  string
 // @Failure      401  {object}  string
 // @Failure      422  {object}  string
 // @Failure      500  {object}  string
-// @Router       /task/{user_id} [get]
+// @Router       /task [get]
 func (a User) getTasks(ctx *gin.Context) {
 	var task database.Model
 	userId, exists := ctx.Get("userId")
@@ -263,6 +264,19 @@ func (a User) getTasks(ctx *gin.Context) {
 	ctx.JSON(200, ans)
 }
 
+// getTasksByProject godoc
+// @Summary      update task
+// @Description  update task based on its id
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Param        model body database.Model true "Enter task info"
+// @Param        Authorization header string  true  "Authorization header"
+// @Success      200  {object}  string
+// @Failure      401  {object}  string
+// @Failure      422  {object}  string
+// @Failure      500  {object}  string
+// @Router       /task [PUT]
 func (a User) updateTask(ctx *gin.Context) {
 	var task database.Model
 	if err := ctx.BindJSON(&task); err != nil {
@@ -276,7 +290,9 @@ func (a User) updateTask(ctx *gin.Context) {
 	}
 	task.CurrentUser.Id = userId.(int)
 	if mistakes, err := a.services.UpdateTask(task); err != nil || len(mistakes) > 0 {
-		ctx.Error(err)
+		if err != nil {
+			ctx.Error(err)
+		}
 		ctx.AbortWithStatusJSON(422, gin.H{"message": "Could not update task", "errors": mistakes})
 		return
 	}
