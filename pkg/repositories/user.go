@@ -108,7 +108,7 @@ func (a User) GetTasks(userId int) ([]database.Task, error) {
 	return tasks, err
 }
 
-func (a User) Update(allColumnNames []string, allColumnValues []interface{}, id int) error {
+func (a User) Update(tablename string, allColumnNames []string, allColumnValues []interface{}, id int) error {
 	// allColumnNames := []string{"name", "description", "current_status", "assigner_id", "start_time"}
 	// allColumnValues := []interface{}{task.Name, task.Description, task.CurrentStatus, task.AssignerId, task.StartTime}
 	columnNames := []string{}
@@ -120,7 +120,7 @@ func (a User) Update(allColumnNames []string, allColumnValues []interface{}, id 
 		}
 	}
 
-	query := "UPDATE tasks SET "
+	query := fmt.Sprintf("UPDATE %s SET ", tablename)
 	for i, columnName := range columnNames {
 		query += columnName + " = $" + fmt.Sprint(i+1)
 		if i < len(columnNames)-1 {
@@ -137,7 +137,7 @@ func (a User) Update(allColumnNames []string, allColumnValues []interface{}, id 
 func (a User) UpdateTask(task database.Task) error {
 	allColumnNames := []string{"name", "description", "current_status", "assigner_id", "start_time"}
 	allColumnValues := []interface{}{task.Name, task.Description, task.CurrentStatus, task.AssignerId, task.StartTime}
-	err := a.Update(allColumnNames, allColumnValues, task.Id)
+	err := a.Update("tasks", allColumnNames, allColumnValues, task.Id)
 	return err
 }
 
@@ -145,4 +145,11 @@ func (a User) CanEditTask(userId int, taskId int) (bool, error) {
 	var canEdit bool
 	err := a.db.QueryRow("SELECT EXISTS (SELECT 1 FROM tasks WHERE id = $2 AND (assigner_id = $1 OR user_id = $1))", userId, taskId).Scan(&canEdit)
 	return canEdit, err
+}
+
+func (a User) UpdateProject(project database.Project) error {
+	allColumnNames := []string{"name", "description", "current_status"}
+	allColumnValues := []interface{}{project.Name, project.Description, project.CurrentStatus}
+	err := a.Update("projects", allColumnNames, allColumnValues, project.Id)
+	return err
 }

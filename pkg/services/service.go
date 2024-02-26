@@ -28,6 +28,7 @@ type user interface {
 	GetTasksByProject(model database.Model) ([]database.Task, error)
 	GetTasks(model database.Model) ([]database.Task, error)
 	UpdateTask(model database.Model) (map[string]string, error)
+	UpdateProject(model database.Model) (map[string]string, error)
 }
 
 type Service struct {

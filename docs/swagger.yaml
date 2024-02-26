@@ -253,6 +253,40 @@ paths:
       summary: Create project
       tags:
       - user
+    put:
+      consumes:
+      - application/json
+      description: update project based on its id
+      parameters:
+      - description: Enter project info
+        in: body
+        name: model
+        required: true
+        schema:
+          $ref: '#/definitions/database.Model'
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+      summary: update project
+      tags:
+      - user
   /project/{project_id}/task:
     get:
       description: get all tasks from recieved project id
@@ -498,6 +532,81 @@ paths:
       summary: Dealete a team
       tags:
       - admin
+  /team/{team_id}/user:
+    get:
+      description: Get all users in the taeam
+      parameters:
+      - description: Enter team id
+        in: path
+        name: team_id
+        required: true
+        type: integer
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+      summary: Get team members
+      tags:
+      - user
+  /team/user:
+    post:
+      consumes:
+      - application/json
+      description: Add new user to the team.
+      parameters:
+      - description: Enter user id, team id and role id
+        in: body
+        name: model
+        required: true
+        schema:
+          $ref: '#/definitions/database.Model'
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+      summary: Add user
+      tags:
+      - user
   /user:
     post:
       consumes:
@@ -538,79 +647,4 @@ paths:
       summary: Create an user
       tags:
       - admin
-  /userTeam:
-    post:
-      consumes:
-      - application/json
-      description: Add new user to the team.
-      parameters:
-      - description: Enter user id, team id and role id
-        in: body
-        name: model
-        required: true
-        schema:
-          $ref: '#/definitions/database.Model'
-      - description: Authorization header
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema:
-            type: string
-        "401":
-          description: Unauthorized
-          schema:
-            type: string
-        "422":
-          description: Unprocessable Entity
-          schema:
-            type: string
-      summary: Add user
-      tags:
-      - user
-  /userTeam/{team_id}:
-    get:
-      description: Get all users in the taeam
-      parameters:
-      - description: Enter team id
-        in: path
-        name: team_id
-        required: true
-        type: integer
-      - description: Authorization header
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema:
-            type: string
-        "401":
-          description: Unauthorized
-          schema:
-            type: string
-        "422":
-          description: Unprocessable Entity
-          schema:
-            type: string
-      summary: Get team members
-      tags:
-      - user
 swagger: "2.0"

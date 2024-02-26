@@ -29,7 +29,7 @@ func NewUser(services services.Service) *User {
 // @Failure      400  {object}  string
 // @Failure      401  {object}  string
 // @Failure      422  {object}  string
-// @Router       /userTeam [post]
+// @Router       /team/user [post]
 func (a User) addUserToTeam(ctx *gin.Context) {
 	userId, exists := ctx.Get("userId")
 	if !exists {
@@ -63,7 +63,7 @@ func (a User) addUserToTeam(ctx *gin.Context) {
 // @Failure      400  {object}  string
 // @Failure      401  {object}  string
 // @Failure      422  {object}  string
-// @Router       /userTeam/{team_id} [get]
+// @Router       /team/{team_id}/user [get]
 func (a User) getTeamMembers(ctx *gin.Context) {
 	var team database.Model
 	userId, exists := ctx.Get("userId")
@@ -237,7 +237,7 @@ func (a User) getTasksByProject(ctx *gin.Context) {
 	ctx.JSON(200, ans)
 }
 
-// getTasksByProject godoc
+// getTasks godoc
 // @Summary      get tasks by user
 // @Description  get all tasks from recieved user id
 // @Tags         user
@@ -264,7 +264,7 @@ func (a User) getTasks(ctx *gin.Context) {
 	ctx.JSON(200, ans)
 }
 
-// getTasksByProject godoc
+// updateTask godoc
 // @Summary      update task
 // @Description  update task based on its id
 // @Tags         user
@@ -294,6 +294,40 @@ func (a User) updateTask(ctx *gin.Context) {
 			ctx.Error(err)
 		}
 		ctx.AbortWithStatusJSON(422, gin.H{"message": "Could not update task", "errors": mistakes})
+		return
+	}
+	ctx.JSON(200, gin.H{"message": "success"})
+}
+
+// updateProject godoc
+// @Summary      update project
+// @Description  update project based on its id
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Param        model body database.Model true "Enter project info"
+// @Param        Authorization header string  true  "Authorization header"
+// @Success      200  {object}  string
+// @Failure      401  {object}  string
+// @Failure      422  {object}  string
+// @Router       /project [PUT]
+func (a User) updateProject(ctx *gin.Context) {
+	var project database.Model
+	if err := ctx.BindJSON(&project); err != nil {
+		ctx.Error(err)
+		ctx.AbortWithStatusJSON(400, gin.H{"message": "Error with input data"})
+		return
+	}
+	userId, exists := ctx.Get("userId")
+	if !exists {
+		panic(errors.New("no user id"))
+	}
+	project.CurrentUser.Id = userId.(int)
+	if mistakes, err := a.services.UpdateProject(project); err != nil || len(mistakes) > 0 {
+		if err != nil {
+			ctx.Error(err)
+		}
+		ctx.AbortWithStatusJSON(422, gin.H{"message": "Could not update project", "errors": mistakes})
 		return
 	}
 	ctx.JSON(200, gin.H{"message": "success"})
