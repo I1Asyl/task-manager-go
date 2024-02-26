@@ -36,6 +36,9 @@ type user interface {
 	Update(tablename string, allColumnNames []string, allColumnValues []interface{}, id int) error
 	CanEditTask(userId int, taskId int) (bool, error)
 	UpdateProject(project database.Project) error
+	GetProjects(projectId int) ([]database.Project, error)
+	GetProject(projectId int) (database.Project, error)
+	GetTask(taskId int) (database.Task, error)
 }
 
 // Repository structure to c

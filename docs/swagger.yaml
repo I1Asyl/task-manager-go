@@ -215,6 +215,36 @@ paths:
       tags:
       - user
   /project:
+    get:
+      description: get all projects from recieved user id
+      parameters:
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: get projects by user
+      tags:
+      - user
     post:
       consumes:
       - application/json

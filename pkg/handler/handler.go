@@ -30,6 +30,7 @@ type user interface {
 	getTasksByProject(ctx *gin.Context)
 	updateTask(ctx *gin.Context)
 	updateProject(ctx *gin.Context)
+	getProjects(ctx *gin.Context)
 }
 
 type middleware interface {
@@ -76,6 +77,7 @@ func (h Handler) Assign() *gin.Engine {
 
 		authorized.POST("/project", h.user.createProject)
 		authorized.PUT("/project", h.user.updateProject)
+		authorized.GET("/project", h.user.getProjects)
 
 		authorized.GET("/project/:id/task", h.user.getTasksByProject)
 	}

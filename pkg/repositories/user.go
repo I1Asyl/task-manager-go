@@ -24,7 +24,6 @@ func (a User) AddUserToTeam(userId int, teamId int, roleId int) error {
 func (a User) GetTeamMembers(teamId int) ([]database.User, error) {
 	users := []database.User{}
 	res, err := a.db.Query("SELECT id, username, name, surname, phone, email, is_admin FROM users WHERE id IN (SELECT user_id FROM users_teams WHERE team_id = $1);", teamId)
-	res.Scan(&users)
 	for res.Next() {
 		var user database.User
 		res.Scan(&user.Id, &user.Username, &user.Name, &user.Surname, &user.Phone, &user.Email, &user.IsAdmin)
@@ -72,7 +71,6 @@ func (a User) GetTeamByProjectId(projectId int) (int, error) {
 func (a User) GetTasksByProject(projectId int) ([]database.Task, error) {
 	var tasks []database.Task
 	res, err := a.db.Query("SELECT id, name, description, project_id, current_status, assigner_id, start_time FROM tasks WHERE project_id = $1", projectId)
-	res.Scan(&tasks)
 	for res.Next() {
 		var task database.Task
 		res.Scan(&task.Id, &task.Name, &task.Description, &task.ProjectId, &task.CurrentStatus, &task.AssignerId, &task.StartTime)
@@ -85,7 +83,6 @@ func (a User) GetTasksByProject(projectId int) ([]database.Task, error) {
 func (a User) GetTasksByTeam(teamId int) ([]database.Task, error) {
 	var tasks []database.Task
 	res, err := a.db.Query("SELECT tasks.id, tasks.name, tasks.description, tasks.project_id, tasks.current_status, tasks.assigner_id, tasks.start_time FROM tasks JOIN projects ON tasks.project_id = projects.id WHERE projects.team_id = $1", teamId)
-	res.Scan(&tasks)
 	for res.Next() {
 		var task database.Task
 		res.Scan(&task.Id, &task.Name, &task.Description, &task.ProjectId, &task.CurrentStatus, &task.AssignerId, &task.StartTime)
@@ -98,7 +95,6 @@ func (a User) GetTasksByTeam(teamId int) ([]database.Task, error) {
 func (a User) GetTasks(userId int) ([]database.Task, error) {
 	var tasks []database.Task
 	res, err := a.db.Query("SELECT id, name, description, project_id, current_status, assigner_id, start_time FROM tasks WHERE user_id = $1", userId)
-	res.Scan(&tasks)
 	for res.Next() {
 		var task database.Task
 		res.Scan(&task.Id, &task.Name, &task.Description, &task.ProjectId, &task.CurrentStatus, &task.AssignerId, &task.StartTime)
@@ -152,4 +148,27 @@ func (a User) UpdateProject(project database.Project) error {
 	allColumnValues := []interface{}{project.Name, project.Description, project.CurrentStatus}
 	err := a.Update("projects", allColumnNames, allColumnValues, project.Id)
 	return err
+}
+
+func (a User) GetProjects(userId int) ([]database.Project, error) {
+	var projects []database.Project
+	res, err := a.db.Query("SELECT id, name, description, team_id, current_status FROM projects WHERE team_id in (SELECT team_id FROM users_teams WHERE user_id = $1)", userId)
+	for res.Next() {
+		var project database.Project
+		res.Scan(&project.Id, &project.Name, &project.Description, &project.TeamId, &project.CurrentStatus)
+		projects = append(projects, project)
+	}
+	return projects, err
+}
+
+func (a User) GetProject(projectId int) (database.Project, error) {
+	var project database.Project
+	err := a.db.QueryRow("SELECT id, name, description, team_id, current_status FROM projects WHERE id = $1", projectId).Scan(&project.Id, &project.Name, &project.Description, &project.TeamId, &project.CurrentStatus)
+	return project, err
+}
+
+func (a User) GetTask(taskId int) (database.Task, error) {
+	var task database.Task
+	err := a.db.QueryRow("SELECT id, name, description, project_id, current_status, assigner_id, start_time FROM tasks WHERE id = $1", taskId).Scan(&task.Id, &task.Name, &task.Description, &task.ProjectId, &task.CurrentStatus, &task.AssignerId, &task.StartTime)
+	return task, err
 }

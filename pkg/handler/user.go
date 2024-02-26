@@ -332,3 +332,30 @@ func (a User) updateProject(ctx *gin.Context) {
 	}
 	ctx.JSON(200, gin.H{"message": "success"})
 }
+
+// getTasks godoc
+// @Summary      get projects by user
+// @Description  get all projects from recieved user id
+// @Tags         user
+// @Produce      json
+// @Param        Authorization header string  true  "Authorization header"
+// @Success      200  {object}  string
+// @Failure      401  {object}  string
+// @Failure      422  {object}  string
+// @Failure      500  {object}  string
+// @Router       /project [get]
+func (a User) getProjects(ctx *gin.Context) {
+	var project database.Model
+	userId, exists := ctx.Get("userId")
+	if !exists {
+		panic(errors.New("no user id"))
+	}
+	project.CurrentUser.Id = userId.(int)
+	ans, err := a.services.GetProjects(project)
+	if err != nil {
+		ctx.Error(err)
+		ctx.AbortWithStatusJSON(422, gin.H{"message": "Could not get projects"})
+		return
+	}
+	ctx.JSON(200, ans)
+}

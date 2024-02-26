@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/I1Asyl/task-manager-go/database"
 	"github.com/I1Asyl/task-manager-go/pkg/repositories"
@@ -128,7 +127,6 @@ func (a User) UpdateProject(model database.Model) (map[string]string, error) {
 		return mistakes, nil
 	}
 	project.TeamId, _ = a.repo.GetTeamByProjectId(project.Id)
-	fmt.Println(model.CurrentUser.Id, project.TeamId, project.Id, project.Name, project.Description, project.TeamId)
 	ok, err := a.repo.CanEditTeamProject(model.CurrentUser.Id, project.TeamId)
 	if err != nil {
 		return map[string]string{"permission": "user can't edit project"}, err
@@ -137,4 +135,8 @@ func (a User) UpdateProject(model database.Model) (map[string]string, error) {
 		return map[string]string{"permission": "user can't edit project"}, nil
 	}
 	return nil, a.repo.UpdateProject(project)
+}
+
+func (a User) GetProjects(model database.Model) ([]database.Project, error) {
+	return a.repo.GetProjects(model.CurrentUser.Id)
 }
