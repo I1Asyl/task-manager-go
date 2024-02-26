@@ -69,3 +69,79 @@ func (a User) GetTeamByProjectId(projectId int) (int, error) {
 	err := a.db.QueryRow("SELECT team_id FROM projects WHERE id = $1", projectId).Scan(&teamId)
 	return teamId, err
 }
+
+func (a User) GetTasksByProject(projectId int) ([]database.Task, error) {
+	var tasks []database.Task
+	res, err := a.db.Query("SELECT id, name, description, project_id, current_status, assigner_id, start_time FROM tasks WHERE project_id = $1", projectId)
+	res.Scan(&tasks)
+	for res.Next() {
+		var task database.Task
+		res.Scan(&task.Id, &task.Name, &task.Description, &task.ProjectId, &task.CurrentStatus, &task.AssignerId, &task.StartTime)
+		tasks = append(tasks, task)
+	}
+
+	return tasks, err
+}
+
+func (a User) GetTasksByTeam(teamId int) ([]database.Task, error) {
+	var tasks []database.Task
+	res, err := a.db.Query("SELECT tasks.id, tasks.name, tasks.description, tasks.project_id, tasks.current_status, tasks.assigner_id, tasks.start_time FROM tasks JOIN projects ON tasks.project_id = projects.id WHERE projects.team_id = $1", teamId)
+	res.Scan(&tasks)
+	for res.Next() {
+		var task database.Task
+		res.Scan(&task.Id, &task.Name, &task.Description, &task.ProjectId, &task.CurrentStatus, &task.AssignerId, &task.StartTime)
+		tasks = append(tasks, task)
+	}
+
+	return tasks, err
+}
+
+func (a User) GetTasks(userId int) ([]database.Task, error) {
+	var tasks []database.Task
+	res, err := a.db.Query("SELECT id, name, description, project_id, current_status, assigner_id, start_time FROM tasks WHERE user_id = $1", userId)
+	res.Scan(&tasks)
+	for res.Next() {
+		var task database.Task
+		res.Scan(&task.Id, &task.Name, &task.Description, &task.ProjectId, &task.CurrentStatus, &task.AssignerId, &task.StartTime)
+		tasks = append(tasks, task)
+	}
+
+	return tasks, err
+}
+
+func (a User) Update(allColumnNames []string, allColumnValues []interface{}, id int) error {
+	// allColumnNames := []string{"name", "description", "current_status", "assigner_id", "start_time"}
+	// allColumnValues := []interface{}{task.Name, task.Description, task.CurrentStatus, task.AssignerId, task.StartTime}
+	columnNames := []string{}
+	columnValues := []interface{}{}
+	for i, columnValue := range allColumnValues {
+		if columnValue != nil {
+			columnNames = append(columnNames, allColumnNames[i])
+			columnValues = append(columnValues, columnValue)
+		}
+	}
+	query := "UPDATE tasks SET "
+	for i, columnName := range columnNames {
+		query += columnName + " = $" + fmt.Sprint(i+1)
+		if i < len(columnNames)-1 {
+			query += ", "
+		}
+	}
+	query += " WHERE id = $" + fmt.Sprint(len(columnValues)+1)
+	columnValues = append(columnValues, id)
+	_, err := a.db.Query(query, columnValues...)
+	return err
+}
+
+func (a User) UpdateTask(task database.Task) error {
+	allColumnNames := []string{"name", "description", "current_status", "assigner_id", "start_time"}
+	allColumnValues := []interface{}{task.Name, task.Description, task.CurrentStatus, task.AssignerId, task.StartTime}
+	err := a.Update(allColumnNames, allColumnValues, task.Id)
+	return err
+}
+
+func (a User) CanEditTask(userId int, taskId int) (bool, error) {
+	var canEdit bool
+	err := a.db.QueryRow("SELECT EXISTS (SELECT 1 FROM tasks WHERE task_id = $2 AND (assigner_id = $1 OR user_id = $1))", userId, taskId).Scan(&canEdit)
+	return canEdit, err
+}

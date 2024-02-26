@@ -26,6 +26,9 @@ type user interface {
 	checkUser(ctx *gin.Context)
 	createProject(ctx *gin.Context)
 	createTask(ctx *gin.Context)
+	getTasks(ctx *gin.Context)
+	getTasksByProject(ctx *gin.Context)
+	updateTask(ctx *gin.Context)
 }
 
 type middleware interface {
@@ -67,7 +70,11 @@ func (h Handler) Assign() *gin.Engine {
 		authorized.GET("/userTeam/:id", h.user.getTeamMembers)
 
 		authorized.POST("/task", h.user.createTask)
+		authorized.GET("/task", h.user.getTasks)
+		authorized.PUT("/task/:id", h.user.updateTask)
+
 		authorized.POST("/project", h.user.createProject)
+		authorized.GET("/project/:id/task", h.user.getTasksByProject)
 	}
 
 	admin := router.Group("")

@@ -253,6 +253,42 @@ paths:
       summary: Create project
       tags:
       - user
+  /project/{project_id}/task:
+    get:
+      description: get all tasks from recieved project id
+      parameters:
+      - description: Enter project id
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: get tasks by project
+      tags:
+      - user
   /refresh:
     post:
       consumes:
@@ -321,6 +357,42 @@ paths:
           schema:
             type: string
       summary: create a task
+      tags:
+      - user
+  /task/{user_id}:
+    get:
+      description: get all tasks from recieved user id
+      parameters:
+      - description: Enter user id
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: get tasks by user
       tags:
       - user
   /team:

@@ -19,7 +19,7 @@ func (a Admin) CreateUser(model database.Model) (map[string]string, error) {
 
 	user := database.User(model.User)
 	fmt.Println(user.Name)
-	if mistakes := user.IsValid(); len(mistakes) > 0 {
+	if mistakes := user.IsValid(1); len(mistakes) > 0 {
 		return mistakes, nil
 	}
 	err := a.repo.CreateUser(user)
@@ -32,7 +32,7 @@ func (a Admin) CreateUser(model database.Model) (map[string]string, error) {
 func (a Admin) CreateTeam(model database.Model) (map[string]string, error) {
 
 	team := database.Team(model.Team)
-	if mistakes := team.IsValid(); len(mistakes) > 0 {
+	if mistakes := team.IsValid(1); len(mistakes) > 0 {
 		fmt.Println(mistakes)
 	}
 

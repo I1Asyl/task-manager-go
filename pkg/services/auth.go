@@ -145,7 +145,7 @@ func (a Authorization) Logout(token string) error {
 func (a Authorization) Login(model database.Model) (string, string, map[string]string, error) {
 
 	userForm := database.UserForm(model.UserForm)
-	if mistakes := userForm.IsValid(); len(mistakes) > 0 {
+	if mistakes := userForm.IsValid(1); len(mistakes) > 0 {
 		return "", "", mistakes, nil
 	}
 

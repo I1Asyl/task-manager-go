@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/I1Asyl/task-manager-go/database"
@@ -111,12 +112,12 @@ func (a User) createProject(ctx *gin.Context) {
 		panic(errors.New("no user id"))
 	}
 	project.CurrentUser.Id = userId.(int)
-	if err := a.services.CreateProject(project); err != nil {
+	if mistakes, err := a.services.CreateProject(project); err != nil || len(mistakes) > 0 {
 		ctx.Error(err)
-		ctx.AbortWithStatusJSON(422, gin.H{"message": "Could not create a project"})
+		ctx.AbortWithStatusJSON(422, gin.H{"message": "Could not create a project", "errors": mistakes})
 		return
 	}
-	ctx.JSON(200, project)
+	ctx.JSON(200, gin.H{"message": "success"})
 }
 
 // checkUser godoc
@@ -190,10 +191,94 @@ func (a User) createTask(ctx *gin.Context) {
 		panic(errors.New("no user id"))
 	}
 	task.CurrentUser.Id = userId.(int)
-	if err := a.services.CreateTask(task); err != nil {
+	if mistakes, err := a.services.CreateTask(task); err != nil || len(mistakes) > 0 {
 		ctx.Error(err)
-		ctx.AbortWithStatusJSON(422, gin.H{"message": "Could not create a task"})
+		ctx.AbortWithStatusJSON(422, gin.H{"message": "Could not create a task", "errors": mistakes})
 		return
 	}
-	ctx.JSON(200, task)
+	ctx.JSON(200, gin.H{"message": "success"})
+}
+
+// getTasksByProject godoc
+// @Summary      get tasks by project
+// @Description  get all tasks from recieved project id
+// @Tags         user
+// @Produce      json
+// @Param        project_id  path int true "Enter project id"
+// @Param        Authorization header string  true  "Authorization header"
+// @Success      200  {object}  string
+// @Failure      401  {object}  string
+// @Failure      422  {object}  string
+// @Failure      500  {object}  string
+// @Router       /project/{project_id}/task [get]
+func (a User) getTasksByProject(ctx *gin.Context) {
+	var task database.Model
+	userId, exists := ctx.Get("userId")
+	if !exists {
+		panic(errors.New("no user id"))
+	}
+	task.CurrentUser.Id = userId.(int)
+	temp, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.AbortWithError(500, err)
+		return
+	}
+
+	fmt.Println(temp)
+	task.Project.Id = temp
+	ans, err := a.services.GetTasksByProject(task)
+	if err != nil {
+		ctx.Error(err)
+		ctx.AbortWithStatusJSON(422, gin.H{"message": "Could not get tasks"})
+		return
+	}
+	ctx.JSON(200, ans)
+}
+
+// getTasksByProject godoc
+// @Summary      get tasks by user
+// @Description  get all tasks from recieved user id
+// @Tags         user
+// @Produce      json
+// @Param        user_id  path int true "Enter user id"
+// @Param        Authorization header string  true  "Authorization header"
+// @Success      200  {object}  string
+// @Failure      401  {object}  string
+// @Failure      422  {object}  string
+// @Failure      500  {object}  string
+// @Router       /task/{user_id} [get]
+func (a User) getTasks(ctx *gin.Context) {
+	var task database.Model
+	userId, exists := ctx.Get("userId")
+	if !exists {
+		panic(errors.New("no user id"))
+	}
+	task.CurrentUser.Id = userId.(int)
+	ans, err := a.services.GetTasks(task)
+	if err != nil {
+		ctx.Error(err)
+		ctx.AbortWithStatusJSON(422, gin.H{"message": "Could not get tasks"})
+		return
+	}
+	ctx.JSON(200, ans)
+}
+
+func (a User) updateTask(ctx *gin.Context) {
+	var task database.Model
+	if err := ctx.BindJSON(&task); err != nil {
+		ctx.Error(err)
+		ctx.AbortWithStatusJSON(400, gin.H{"message": "Error with input data"})
+		return
+	}
+	userId, exists := ctx.Get("userId")
+	if !exists {
+		panic(errors.New("no user id"))
+	}
+	task.CurrentUser.Id = userId.(int)
+	if mistakes, err := a.services.UpdateTask(task); err != nil || len(mistakes) > 0 {
+		ctx.Error(err)
+		ctx.AbortWithStatusJSON(422, gin.H{"message": "Could not update task", "errors": mistakes})
+		return
+	}
+	ctx.JSON(200, gin.H{"message": "success"})
 }

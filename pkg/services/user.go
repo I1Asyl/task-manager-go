@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/I1Asyl/task-manager-go/database"
 	"github.com/I1Asyl/task-manager-go/pkg/repositories"
@@ -28,22 +29,20 @@ func (a User) AddUserToTeam(model database.Model) error {
 	return a.repo.AddUserToTeam(userTeam.UserId, userTeam.TeamId, userTeam.RoleId)
 }
 
-func (a User) CreateProject(model database.Model) error {
+func (a User) CreateProject(model database.Model) (map[string]string, error) {
 	project := database.Project(model.Project)
-	if mistakes := project.IsValid(); len(mistakes) > 0 {
-		for _, m := range mistakes {
-			return errors.New(m)
-		}
+	if mistakes := project.IsValid(1); len(mistakes) > 0 {
+		return mistakes, nil
 	}
 	ok, err := a.repo.CanEditTeamProject(model.CurrentUser.Id, model.Project.TeamId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if !ok {
-		return errors.New("user can't edit project")
+		return map[string]string{"permission": "user can't edit project"}, nil
 	}
 
-	return a.repo.CreateProject(project)
+	return nil, a.repo.CreateProject(project)
 }
 
 func (a User) GetTeamMembers(model database.Model) ([]database.User, error) {
@@ -60,26 +59,67 @@ func (a User) GetTeamMembers(model database.Model) ([]database.User, error) {
 	return a.repo.GetTeamMembers(team.Id)
 }
 
-func (a User) CreateTask(model database.Model) error {
+func (a User) CreateTask(model database.Model) (map[string]string, error) {
 	task := database.Task(model.Task)
 	task.AssignerId = model.CurrentUser.Id
-	if mistakes := task.IsValid(); len(mistakes) > 0 {
-		for _, m := range mistakes {
-			return errors.New(m)
-		}
+	if mistakes := task.IsValid(1); len(mistakes) > 0 {
+		return mistakes, nil
 	}
 	teamId, err := a.repo.GetTeamByProjectId(task.ProjectId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	model.Team.Id = teamId
 	ok, err := a.repo.CanEditTeamProject(model.CurrentUser.Id, model.Team.Id)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if !ok {
-		return errors.New("user can't edit project")
+		return map[string]string{"permission": "user can't edit project"}, nil
+	}
+	ok, err = a.repo.IsInTeam(task.UserId, model.Team.Id)
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return map[string]string{"user": "added user is not in the team"}, nil
 	}
 
-	return a.repo.CreateTask(task)
+	return nil, a.repo.CreateTask(task)
+}
+
+func (a User) GetTasksByProject(model database.Model) ([]database.Task, error) {
+	project := database.Project(model.Project)
+	project.TeamId, _ = a.repo.GetTeamByProjectId(project.Id)
+
+	ok, err := a.repo.IsInTeam(model.CurrentUser.Id, project.TeamId)
+	fmt.Println(model.CurrentUser.Id, project.TeamId, project.Id, ok, err)
+	if err != nil {
+		return []database.Task{}, err
+	}
+	if !ok {
+		return []database.Task{}, errors.New("user can't see tasks")
+	}
+	return a.repo.GetTasksByProject(project.Id)
+}
+
+func (a User) GetTasks(model database.Model) ([]database.Task, error) {
+	return a.repo.GetTasks(model.CurrentUser.Id)
+}
+
+func (a User) UpdateTask(model database.Model) (map[string]string, error) {
+	task := database.Task(model.Task)
+	if mistakes := task.IsValid(2); len(mistakes) > 0 {
+		for _, m := range mistakes {
+			return nil, errors.New(m)
+		}
+	}
+	ok, err := a.repo.CanEditTask(model.CurrentUser.Id, task.Id)
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return nil, errors.New("user can't edit task")
+	}
+	return nil, a.repo.UpdateTask(task)
 }

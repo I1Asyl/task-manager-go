@@ -23,8 +23,11 @@ type admin interface {
 type user interface {
 	AddUserToTeam(model database.Model) error
 	GetTeamMembers(model database.Model) ([]database.User, error)
-	CreateProject(model database.Model) error
-	CreateTask(model database.Model) error
+	CreateProject(model database.Model) (map[string]string, error)
+	CreateTask(model database.Model) (map[string]string, error)
+	GetTasksByProject(model database.Model) ([]database.Task, error)
+	GetTasks(model database.Model) ([]database.Task, error)
+	UpdateTask(model database.Model) (map[string]string, error)
 }
 
 type Service struct {

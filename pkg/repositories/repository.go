@@ -29,6 +29,12 @@ type user interface {
 	CreateProject(project database.Project) error
 	CreateTask(task database.Task) error
 	GetTeamByProjectId(projectId int) (int, error)
+	IsInTeam(userId int, teamId int) (bool, error)
+	GetTasksByProject(projectId int) ([]database.Task, error)
+	GetTasks(userId int) ([]database.Task, error)
+	UpdateTask(task database.Task) error
+	Update(allColumnNames []string, allColumnValues []interface{}, id int) error
+	CanEditTask(userId int, taskId int) (bool, error)
 }
 
 // Repository structure to c

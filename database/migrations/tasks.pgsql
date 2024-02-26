@@ -18,3 +18,5 @@ CREATE TABLE tasks(
         FOREIGN KEY(project_id) REFERENCES projects(id)
             ON DELETE SET NULL
 );
+
+select tablename,indexname,tablespace,indexdef  from pg_indexes where tablename = 'tasks';

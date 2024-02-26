@@ -78,120 +78,141 @@ type Project struct {
 	CurrentStatus string `json:"current_status" db:"XXXXXX"`
 }
 
-func (t Task) IsValid() map[string]string {
-	errors := make(map[string]string)
-	if err := validName(t.Name); err != nil {
-		errors["name"] = err.Error()
+func isValidForUpdate(allNames []string, allValues []interface{}, allFunctions []func(interface{}) error) (map[string]string, error) {
+	names := []string{}
+	values := []interface{}{}
+	functions := []func(interface{}) error{}
+	for i := 0; i < len(allValues); i++ {
+		if allValues[i] != nil {
+			names = append(names, allNames[i])
+			values = append(values, allValues[i])
+			functions = append(functions, allFunctions[i])
+		}
 	}
-	if err := validName(t.Description); err != nil {
-		errors["description"] = err.Error()
-	}
-	if t.ProjectId == 0 {
-		errors["project_id"] = "Project id is required"
-	}
-	if t.AssignerId == 0 {
-		errors["assigner_id"] = "Assigner id is required"
-	}
-	return errors
+	return isValidForInsert(names, values, functions)
+
 }
 
-func (u UserForm) IsValid() map[string]string {
-	errors := make(map[string]string)
-	if err := validUsername(u.Username); err != nil {
-		errors["username"] = err.Error()
+func isValidForInsert(names []string, values []interface{}, functions []func(interface{}) error) (map[string]string, error) {
+	mistakes := make(map[string]string)
+	if len(names) != len(values) || len(names) != len(functions) {
+		return nil, errors.New("invalid number of names, values and functions in validation")
 	}
-	if err := validPassword(u.Password); err != nil {
-		errors["password"] = err.Error()
+	for i := 0; i < len(names); i++ {
+		if err := functions[i](values[i]); err != nil {
+			mistakes[names[i]] = err.Error()
+		}
 	}
-	return errors
+	return mistakes, nil
 }
 
-func (p Project) IsValid() map[string]string {
-	errors := make(map[string]string)
-	if err := validName(p.Name); err != nil {
-		errors["name"] = err.Error()
+func isValid(names []string, values []interface{}, functions []func(interface{}) error, validityCode int) map[string]string {
+	if validityCode == 1 {
+		mistakes, err := isValidForInsert(names, values, functions)
+		if err != nil {
+			panic(err)
+		}
+		return mistakes
 	}
-	if err := validName(p.Description); err != nil {
-		errors["description"] = err.Error()
+	if validityCode == 2 {
+		mistakes, err := isValidForUpdate(names, values, functions)
+		if err != nil {
+			panic(err)
+		}
+		return mistakes
 	}
-	return errors
-}
-func (t Team) IsValid() map[string]string {
-	errors := make(map[string]string)
-	if err := validName(t.Name); err != nil {
-		errors["name"] = err.Error()
-	}
-	return errors
-}
-
-func (u User) IsValid() map[string]string {
-	errors := make(map[string]string)
-	if err := validName(u.Name); err != nil {
-		errors["name"] = err.Error()
-	}
-	if err := validName(u.Username); err != nil {
-		errors["username"] = err.Error()
-	}
-	if err := validName(u.Surname); err != nil {
-		errors["surname"] = err.Error()
-	}
-	if _, err := mail.ParseAddress(u.Email); err != nil {
-		errors["email"] = err.Error()
-	}
-	if err := validEmail(u.Email); err != nil {
-		errors["email"] = err.Error()
-	}
-	if err := validPhone(u.Phone); err != nil {
-		errors["phone"] = err.Error()
-	}
-	if err := validPassword(u.Password); err != nil {
-		errors["password"] = err.Error()
-	}
-	return errors
+	return nil
 }
 
-func validUsername(username string) error {
+func (t Task) IsValid(validityCode int) map[string]string {
+	names := []string{"name", "description", "project_id", "assigner_id"}
+	values := []interface{}{t.Name, t.Description, t.ProjectId, t.AssignerId}
+	functions := []func(interface{}) error{validName, validName, validId, validId}
+	return isValid(names, values, functions, validityCode)
+}
+
+func (u UserForm) IsValid(validityCode int) map[string]string {
+	names := []string{"username", "password"}
+	values := []interface{}{u.Username, u.Password}
+	functions := []func(interface{}) error{validUsername, validPassword}
+	return isValid(names, values, functions, validityCode)
+}
+
+func (p Project) IsValid(validityCode int) map[string]string {
+	names := []string{"name", "description", "team_id"}
+	values := []interface{}{p.Name, p.Description, p.TeamId}
+	functions := []func(interface{}) error{validName, validName, validId}
+	return isValid(names, values, functions, validityCode)
+}
+func (t Team) IsValid(validityCode int) map[string]string {
+	names := []string{"name"}
+	values := []interface{}{t.Name}
+	functions := []func(interface{}) error{validName}
+	return isValid(names, values, functions, validityCode)
+}
+
+func (u User) IsValid(validityCode int) map[string]string {
+	names := []string{"name", "username", "surname", "email", "phone", "password"}
+	values := []interface{}{u.Name, u.Username, u.Surname, u.Email, u.Phone, u.Password}
+	functions := []func(interface{}) error{validName, validUsername, validName, validEmail, validPhone, validPassword}
+	return isValid(names, values, functions, validityCode)
+}
+
+func validUsername(input interface{}) error {
+	username := input.(string)
 	if len(username) < 3 {
-		return errors.New("Username is too short")
+		return errors.New("username is too short")
 	}
 	return nil
 }
-func validName(name string) error {
+func validName(input interface{}) error {
+	name := input.(string)
 	if len(name) < 3 {
-		return errors.New("Name is too short")
+		return errors.New("name is too short")
 	}
 	return nil
 }
-func validEmail(name string) error {
-	if len(name) < 3 {
-		return errors.New("Name is too short")
+func validEmail(input interface{}) error {
+	email := input.(string)
+	if _, err := mail.ParseAddress(email); err != nil {
+		return err
 	}
 	return nil
 }
-func validPhone(phone_number string) error {
+func validPhone(input interface{}) error {
+	phone_number := input.(string)
 	e164Regex := `^\+[1-9]\d{1,14}$`
 	re := regexp.MustCompile(e164Regex)
 	phone_number = strings.ReplaceAll(phone_number, " ", "")
 
 	if !re.MatchString(phone_number) {
-		return errors.New("Invalid phone number")
+		return errors.New("invalid phone number")
 	}
 	return nil
 }
 
-func validPassword(password string) error {
+func validId(input interface{}) error {
+	id := input.(int)
+	if id <= 0 {
+		return errors.New("id is not given or negative")
+	}
+	return nil
+}
+
+func validPassword(input interface{}) error {
+	password := input.(string)
 	if len(password) < 6 {
-		return errors.New("Password is too short")
+		return errors.New("password is too short")
 	}
 	passRegex := `\d`
 	re := regexp.MustCompile(passRegex)
 	if !re.MatchString(password) {
-		return errors.New("Password has no digits")
+		return errors.New("password has no digits")
 	}
 	passRegex = `[A-Za-z]`
 	re = regexp.MustCompile(passRegex)
 	if !re.MatchString(password) {
-		return errors.New("Password has no letters")
+		return errors.New("password has no letters")
 	}
 
 	return nil
