@@ -7,7 +7,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/I1Asyl/task-manager-go/configuration"
 	"github.com/I1Asyl/task-manager-go/database"
 	"github.com/I1Asyl/task-manager-go/docs"
 	"github.com/I1Asyl/task-manager-go/pkg/handler"
@@ -46,9 +45,8 @@ func main() {
 
 func run() error {
 	docs.SwaggerInfo.BasePath = "/"
-	config := configuration.New()
 
-	db, err := database.NewConnection(config.Database)
+	db, err := database.NewConnection()
 	if err != nil {
 		return err
 	}
@@ -61,7 +59,7 @@ func run() error {
 
 	h := handler.New(services)
 	r := h.Assign()
-	if err = r.Run(fmt.Sprintf(":%d", config.Server.Port)); err != nil {
+	if err = r.Run(fmt.Sprintf(":%d", 8080)); err != nil {
 		return err
 	}
 

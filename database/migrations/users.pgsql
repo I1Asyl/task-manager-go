@@ -15,4 +15,3 @@ INSERT INTO users(username, name, surname, phone, password, email, is_admin) VAL
 
 INSERT INTO users(username, name, surname, phone, password, email, is_admin) VALUES ('asylasus', 'yera', 'Yera', 'Altayss', 'Qqwerty1!', 'ltayyerasyl@gmail.com', false);
 
-select tablename,indexname,tablespace,indexdef  from pg_indexes where tablename = 'tasks';

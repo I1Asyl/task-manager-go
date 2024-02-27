@@ -17,7 +17,7 @@ func NewUser(db *sql.DB) *User {
 }
 
 func (a User) AddUserToTeam(userId int, teamId int, roleId int) error {
-	_, err := a.db.Query("INSERT INTO users_teams (user_id, team_id, role_id) VALUES ($1, $2, $3) RETURNING *", userId, teamId, roleId)
+	_, err := a.db.Exec("INSERT INTO users_teams (user_id, team_id, role_id) VALUES ($1, $2, $3)", userId, teamId, roleId)
 	return err
 }
 
@@ -46,7 +46,7 @@ func (a User) CanEditTeamProject(userId int, teamId int) (bool, error) {
 }
 
 func (a User) CreateProject(project database.Project) error {
-	_, err := a.db.Query("INSERT INTO projects (name, description, team_id, current_status) VALUES ($1, $2, $3, $4)", project.Name, project.Description, project.TeamId, project.CurrentStatus)
+	_, err := a.db.Exec("INSERT INTO projects (name, description, team_id, current_status) VALUES ($1, $2, $3, $4)", project.Name, project.Description, project.TeamId, project.CurrentStatus)
 	return err
 }
 
@@ -126,7 +126,7 @@ func (a User) Update(tablename string, allColumnNames []string, allColumnValues 
 	query += " WHERE id = $" + fmt.Sprint(len(columnValues)+1)
 
 	columnValues = append(columnValues, id)
-	_, err := a.db.Query(query, columnValues...)
+	_, err := a.db.Exec(query, columnValues...)
 	return err
 }
 
