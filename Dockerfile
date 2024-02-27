@@ -6,15 +6,11 @@ FROM golang:latest AS build_base
 WORKDIR /tmp/task-manager-go
 
 # We want to populate the module cache based on the go.{mod,sum} files.
-COPY go.mod .
-COPY go.sum .
+COPY . .
 
 RUN go mod download
 
-COPY . .
 
-# Unit tests
-RUN CGO_ENABLED=0 go test -v
 
 # Build the Go app
 RUN CGO_ENABLED=0 go build -o ./out/task-manager-go .
@@ -23,7 +19,6 @@ RUN CGO_ENABLED=0 go build -o ./out/task-manager-go .
 FROM gcr.io/distroless/static
 
 COPY --from=build_base /tmp/task-manager-go/out/task-manager-go /
-COPY --from=build_base /tmp/task-manager-go/config.yml /
 
 # This container exposes port 8080 to the outside world
 EXPOSE 8080

@@ -44,6 +44,9 @@ func main() {
 }
 
 func run() error {
+	// if err := godotenv.Load(".env"); err != nil {
+	// 	return err
+	// }
 	docs.SwaggerInfo.BasePath = "/"
 
 	db, err := database.NewConnection()
