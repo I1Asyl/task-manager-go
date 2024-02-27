@@ -20,7 +20,7 @@ func NewUser(services services.Service) *User {
 // addUserToTeam godoc
 // @Summary      Add user
 // @Description  Add new user to the team.
-// @Tags         user
+// @Tags         team
 // @Accept       json
 // @Produce      json
 // @Param        model body database.Model true "Enter user id, team id and role id"
@@ -55,7 +55,7 @@ func (a User) addUserToTeam(ctx *gin.Context) {
 // getTeamMembers godoc
 // @Summary      Get team members
 // @Description  Get all users in the taeam
-// @Tags         user
+// @Tags         team
 // @Produce      json
 // @Param        team_id  path int true "Enter team id"
 // @Param        Authorization header string  true  "Authorization header"
@@ -89,7 +89,7 @@ func (a User) getTeamMembers(ctx *gin.Context) {
 // createProject godoc
 // @Summary      Create project
 // @Description  Create a project and assign it to the team
-// @Tags         user
+// @Tags         project
 // @Accept       json
 // @Produce      json
 // @Param        model body database.Model true "Enter project info and team id"
@@ -170,7 +170,7 @@ func (a User) logout(ctx *gin.Context) {
 // logout godoc
 // @Summary      create a task
 // @Description  create a task and assign it to someone and project.
-// @Tags         user
+// @Tags         task
 // @Accept       json
 // @Produce      json
 // @Param        model body database.Model true "Enter task info and team id"
@@ -205,7 +205,7 @@ func (a User) createTask(ctx *gin.Context) {
 // getTasksByProject godoc
 // @Summary      get tasks by project
 // @Description  get all tasks from recieved project id
-// @Tags         user
+// @Tags         project
 // @Produce      json
 // @Param        project_id  path int true "Enter project id"
 // @Param        Authorization header string  true  "Authorization header"
@@ -240,7 +240,7 @@ func (a User) getTasksByProject(ctx *gin.Context) {
 // getTasks godoc
 // @Summary      get tasks by user
 // @Description  get all tasks from recieved user id
-// @Tags         user
+// @Tags         task
 // @Produce      json
 // @Param        Authorization header string  true  "Authorization header"
 // @Success      200  {object}  string
@@ -267,7 +267,7 @@ func (a User) getTasks(ctx *gin.Context) {
 // updateTask godoc
 // @Summary      update task
 // @Description  update task based on its id
-// @Tags         user
+// @Tags         task
 // @Accept       json
 // @Produce      json
 // @Param        model body database.Model true "Enter task info"
@@ -302,7 +302,7 @@ func (a User) updateTask(ctx *gin.Context) {
 // updateProject godoc
 // @Summary      update project
 // @Description  update project based on its id
-// @Tags         user
+// @Tags         project
 // @Accept       json
 // @Produce      json
 // @Param        model body database.Model true "Enter project info"
@@ -336,7 +336,7 @@ func (a User) updateProject(ctx *gin.Context) {
 // getTasks godoc
 // @Summary      get projects by user
 // @Description  get all projects from recieved user id
-// @Tags         user
+// @Tags         project
 // @Produce      json
 // @Param        Authorization header string  true  "Authorization header"
 // @Success      200  {object}  string

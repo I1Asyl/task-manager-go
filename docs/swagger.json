@@ -162,7 +162,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "project"
                 ],
                 "summary": "get projects by user",
                 "parameters": [
@@ -210,7 +210,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "project"
                 ],
                 "summary": "update project",
                 "parameters": [
@@ -261,7 +261,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "project"
                 ],
                 "summary": "Create project",
                 "parameters": [
@@ -317,7 +317,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "project"
                 ],
                 "summary": "get tasks by project",
                 "parameters": [
@@ -417,7 +417,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "task"
                 ],
                 "summary": "get tasks by user",
                 "parameters": [
@@ -465,7 +465,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "task"
                 ],
                 "summary": "update task",
                 "parameters": [
@@ -522,7 +522,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "task"
                 ],
                 "summary": "create a task",
                 "parameters": [
@@ -640,7 +640,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "team"
                 ],
                 "summary": "Add user",
                 "parameters": [
@@ -743,7 +743,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "team"
                 ],
                 "summary": "Get team members",
                 "parameters": [

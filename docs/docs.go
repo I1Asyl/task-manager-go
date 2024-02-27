@@ -168,7 +168,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "project"
                 ],
                 "summary": "get projects by user",
                 "parameters": [
@@ -216,7 +216,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "project"
                 ],
                 "summary": "update project",
                 "parameters": [
@@ -267,7 +267,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "project"
                 ],
                 "summary": "Create project",
                 "parameters": [
@@ -323,7 +323,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "project"
                 ],
                 "summary": "get tasks by project",
                 "parameters": [
@@ -423,7 +423,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "task"
                 ],
                 "summary": "get tasks by user",
                 "parameters": [
@@ -471,7 +471,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "task"
                 ],
                 "summary": "update task",
                 "parameters": [
@@ -528,7 +528,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "task"
                 ],
                 "summary": "create a task",
                 "parameters": [
@@ -646,7 +646,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "team"
                 ],
                 "summary": "Add user",
                 "parameters": [
@@ -749,7 +749,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "team"
                 ],
                 "summary": "Get team members",
                 "parameters": [
