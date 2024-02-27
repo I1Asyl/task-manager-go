@@ -1,4 +1,4 @@
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     name VARCHAR(50) NOT NULL,
@@ -15,14 +15,14 @@ INSERT INTO users(username, name, surname, phone, password, email, is_admin) VAL
 
 INSERT INTO users(username, name, surname, phone, password, email, is_admin) VALUES ('asylasus', 'yera', 'Yera', 'Altayss', 'Qqwerty1!', 'ltayyerasyl@gmail.com', false);
 
-CREATE TABLE teams(
+CREATE TABLE IF NOT EXISTS teams(
     id SERIAL PRIMARY KEY,
     name VARCHAR(30) UNIQUE NOT NULL, 
     description text NOT NULL
 
 );
 
-CREATE TABLE team_roles (
+CREATE TABLE IF NOT EXISTS team_roles (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     description text NOT NULL,
@@ -35,7 +35,7 @@ INSERT INTO team_roles(name, description, can_edit_users, can_edit_projects, can
 INSERT INTO team_roles(name, description, can_edit_users, can_edit_projects, can_edit_info) VALUES ('junior', 'can view everything but can not edit anything', false, false, false);
 
 
-CREATE TABLE users_teams(
+CREATE TABLE IF NOT EXISTS users_teams(
     user_id int NOT NULL, 
     team_id int NOT NULL,
     role_id int NOT NULL DEFAULT 2,
@@ -51,9 +51,9 @@ CREATE TABLE users_teams(
             ON DELETE SET DEFAULT
 );
 
-CREATE TYPE status AS ENUM('waiting', 'in progress', 'finished', 'reserved');
+CREATE TYPE IF NOT EXISTS status AS ENUM('waiting', 'in progress', 'finished', 'reserved');
 
-CREATE TABLE projects(
+CREATE TABLE IF NOT EXISTS projects(
     id SERIAL NOT NULL,
     description text  NOT NULL,
     name VARCHAR(30) UNIQUE NOT NULL,
@@ -65,7 +65,7 @@ CREATE TABLE projects(
             ON DELETE SET NULL
 );
 
-CREATE TABLE sessions(
+CREATE TABLE IF NOT EXISTS sessions(
     id SERIAL NOT NULL,
     first_token text  NOT NULL,
     token text NOT NULL,
@@ -76,7 +76,7 @@ CREATE TABLE sessions(
             ON DELETE CASCADE
 );
 
-CREATE TABLE tasks(
+CREATE TABLE IF NOT EXISTS tasks(
     id SERIAL NOT NULL, 
     name VARCHAR(30),
     user_id int,
@@ -97,4 +97,3 @@ CREATE TABLE tasks(
             ON DELETE SET NULL
 );
 
-select tablename,indexname,tablespace,indexdef  from pg_indexes where tablename = 'tasks';
