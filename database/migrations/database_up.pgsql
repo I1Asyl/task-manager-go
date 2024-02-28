@@ -4,16 +4,16 @@ CREATE TABLE IF NOT EXISTS users (
     name VARCHAR(50) NOT NULL,
     surname VARCHAR(50) NOT NULL,
     phone VARCHAR(50) UNIQUE NOT NULL,
-    password VARCHAR(50) NOT NULL,
+    password VARCHAR(200) NOT NULL,
     email VARCHAR(50) UNIQUE NOT NULL,
     is_admin boolean NOT NULL
 );
 
-INSERT INTO users(username, name, surname, phone, password, email, is_admin) VALUES ('asus', 'yera', 'Yera', 'Altay', 'Qqwerty1!', 'altayerasyl@gmail.com', true);
+INSERT INTO users(username, name, surname, phone, password, email, is_admin) VALUES ('asus', 'yera', 'Yera', 'Altay', '73656372657414406d3848369e58541696a81a0dbe945227272a4ed57858385b585b8206ed8d', 'altayerasyl@gmail.com', true);
 
-INSERT INTO users(username, name, surname, phone, password, email, is_admin) VALUES ('asyl', 'yera', 'Yera', 'Altays', 'Qqwerty1!', 'altayyerasyl@gmail.com', false);
+INSERT INTO users(username, name, surname, phone, password, email, is_admin) VALUES ('asyl', 'yera', 'Yera', 'Altays', '73656372657414406d3848369e58541696a81a0dbe945227272a4ed57858385b585b8206ed8d', 'altayyerasyl@gmail.com', false);
 
-INSERT INTO users(username, name, surname, phone, password, email, is_admin) VALUES ('asylasus', 'yera', 'Yera', 'Altayss', 'Qqwerty1!', 'ltayyerasyl@gmail.com', false);
+INSERT INTO users(username, name, surname, phone, password, email, is_admin) VALUES ('asylasus', 'yera', 'Yera', 'Altayss', '73656372657414406d3848369e58541696a81a0dbe945227272a4ed57858385b585b8206ed8d', 'ltayyerasyl@gmail.com', false);
 
 CREATE TABLE IF NOT EXISTS teams(
     id SERIAL PRIMARY KEY,
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS users_teams(
             ON DELETE SET DEFAULT
 );
 
-CREATE TYPE IF NOT EXISTS status AS ENUM('waiting', 'in progress', 'finished', 'reserved');
+CREATE TYPE status AS ENUM('waiting', 'in progress', 'finished', 'reserved');
 
 CREATE TABLE IF NOT EXISTS projects(
     id SERIAL NOT NULL,
