@@ -12,6 +12,7 @@ import (
 	"github.com/I1Asyl/task-manager-go/pkg/handler"
 	"github.com/I1Asyl/task-manager-go/pkg/repositories"
 	"github.com/I1Asyl/task-manager-go/pkg/services"
+	"github.com/joho/godotenv"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -44,9 +45,9 @@ func main() {
 }
 
 func run() error {
-	// if err := godotenv.Load(".env"); err != nil {
-	// 	return err
-	// }
+	if err := godotenv.Load(".env"); err != nil {
+		return err
+	}
 	docs.SwaggerInfo.BasePath = "/"
 
 	db, err := database.NewConnection()
