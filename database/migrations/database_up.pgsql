@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(50) UNIQUE NOT NULL,
     is_admin boolean NOT NULL
 );
+CREATE INDEX IF NOT EXISTS users_username ON users(username);
 
 INSERT INTO users(username, name, surname, phone, password, email, is_admin) VALUES ('asus', 'yera', 'Yera', 'Altay', '73656372657414406d3848369e58541696a81a0dbe945227272a4ed57858385b585b8206ed8d', 'altayerasyl@gmail.com', true);
 
@@ -51,6 +52,9 @@ CREATE TABLE IF NOT EXISTS users_teams(
             ON DELETE SET DEFAULT
 );
 
+CREATE INDEX IF NOT EXISTS users_teams_user_id ON users_teams(user_id); 
+CREATE INDEX IF NOT EXISTS users_teams_user_id ON users_teams(team_id); 
+
 CREATE TYPE status AS ENUM('waiting', 'in progress', 'finished', 'reserved');
 
 CREATE TABLE IF NOT EXISTS projects(
@@ -75,6 +79,9 @@ CREATE TABLE IF NOT EXISTS sessions(
         FOREIGN KEY(user_id) REFERENCES users(id)
             ON DELETE CASCADE
 );
+
+CREATE INDEX IF NOT EXISTS sessions_first_token ON sessions(first_token);
+
 
 CREATE TABLE IF NOT EXISTS tasks(
     id SERIAL NOT NULL, 

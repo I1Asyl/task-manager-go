@@ -151,7 +151,7 @@ func (a Authorization) Login(model database.Model) (string, string, map[string]s
 
 	var user database.User
 	var err error
-	userForm.Password = Hash(userForm.Password)
+	//userForm.Password = Hash(userForm.Password)
 	if user, err = a.repo.GetUser(userForm); err != nil || (user == database.User{}) {
 
 		return "", "", nil, err
