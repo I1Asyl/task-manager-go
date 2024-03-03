@@ -82,6 +82,14 @@ CREATE TABLE IF NOT EXISTS sessions(
 
 CREATE INDEX IF NOT EXISTS sessions_first_token ON sessions(first_token);
 
+CREATE TABLE IF NOT EXISTS tags(
+    id SERIAL, 
+    name VARCHAR(30),
+    description text,
+    PRIMARY KEY(id)
+);
+
+INSERT INTO tags(name, description) VALUES('dev', 'Development');
 
 CREATE TABLE IF NOT EXISTS tasks(
     id SERIAL NOT NULL, 
@@ -93,6 +101,10 @@ CREATE TABLE IF NOT EXISTS tasks(
     description text, 
     project_id int,   
     current_status status NOT NULL,
+    tag_id int,
+    CONSTRAINT task_tag_fk 
+        FOREIGN KEY(tag_id) REFERENCES tags(id)
+            ON DELETE SET NULL,
     CONSTRAINT task_user_fk
         FOREIGN KEY(user_id) REFERENCES users(id)
             ON DELETE SET NULL, 
