@@ -172,3 +172,7 @@ func (a User) GetTask(taskId int) (database.Task, error) {
 	err := a.db.QueryRow("SELECT id, name, description, project_id, current_status, assigner_id, start_time FROM tasks WHERE id = $1", taskId).Scan(&task.Id, &task.Name, &task.Description, &task.ProjectId, &task.CurrentStatus, &task.AssignerId, &task.StartTime)
 	return task, err
 }
+
+func (a User) FilterByTags() {
+
+}
