@@ -31,12 +31,11 @@ func (auth Authorization) GetUser(user database.UserForm) (database.User, error)
 	var userReturn database.User
 	var err error
 	err = auth.db.QueryRow("SELECT id, username, name, surname, is_admin, password FROM users WHERE username = $1;", user.Username).Scan(&userReturn.Id, &userReturn.Username, &userReturn.Name, &userReturn.Surname, &userReturn.IsAdmin, &userReturn.Password)
-
 	if err != nil {
 		return database.User{}, err
 	}
 	if user.Password != userReturn.Password {
-		return database.User{}, errors.New("no password")
+		return database.User{}, errors.New("password is not correct")
 	}
 
 	return userReturn, nil
