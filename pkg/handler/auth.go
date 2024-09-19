@@ -74,6 +74,10 @@ func (a Auth) refreshToken(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{"access": access, "refresh": refresh})
 }
 
+func (a Auth) main(ctx *gin.Context) {
+	ctx.JSON(200, gin.H{"message": "Hello world"})
+}
+
 // func (a Auth) CreateUser(user database.User) error {
 // 	return a.services.CreateUser(user)
 // }

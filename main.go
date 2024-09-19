@@ -12,6 +12,7 @@ import (
 	"github.com/I1Asyl/task-manager-go/pkg/handler"
 	"github.com/I1Asyl/task-manager-go/pkg/repositories"
 	"github.com/I1Asyl/task-manager-go/pkg/services"
+	"github.com/joho/godotenv"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -44,13 +45,13 @@ func main() {
 }
 
 func run() error {
+	godotenv.Load(".env")
 	docs.SwaggerInfo.BasePath = "/"
 
-	db, err := database.NewConnection()
+	db, err := database.NewConnection(os.Getenv("DSN"))
 	if err != nil {
 		return err
 	}
-
 	repository := repositories.New(db)
 
 	go handleShutdown(db)
@@ -59,7 +60,7 @@ func run() error {
 
 	h := handler.New(services)
 	r := h.Assign()
-	if err = r.Run(fmt.Sprintf(":%d", 8080)); err != nil {
+	if err = r.Run(fmt.Sprintf(":%d", 8000)); err != nil {
 		return err
 	}
 

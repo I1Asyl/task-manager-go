@@ -10,7 +10,7 @@ import (
 
 type auth interface {
 	login(ctx *gin.Context)
-
+	main(ctx *gin.Context)
 	refreshToken(ctx *gin.Context)
 }
 
@@ -59,36 +59,39 @@ func (h Handler) Assign() *gin.Engine {
 	router.Use(gin.Recovery())
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
-	router.POST("/login", h.auth.login)
-	router.POST("/refresh", h.auth.refreshToken)
-	authorized := router.Group("")
+	api := router.Group("/api")
 	{
-		authorized.Use(h.UserMiddleware())
-		authorized.POST("/logout", h.user.logout)
-		authorized.GET("/check", h.user.checkUser)
+		api.POST("/login", h.auth.login)
+		api.GET("", h.auth.main)
+		api.POST("/refresh", h.auth.refreshToken)
+		authorized := api.Group("user")
+		{
+			authorized.Use(h.UserMiddleware())
+			authorized.POST("/logout", h.user.logout)
+			authorized.GET("/check", h.user.checkUser)
 
-		authorized.POST("/team/user", h.user.addUserToTeam)
-		authorized.GET("/team/:id/user", h.user.getTeamMembers)
+			authorized.POST("/team/user", h.user.addUserToTeam)
+			authorized.GET("/team/:id/user", h.user.getTeamMembers)
 
-		authorized.POST("/task", h.user.createTask)
-		authorized.GET("/task", h.user.getTasks)
-		authorized.PUT("/task", h.user.updateTask)
+			authorized.POST("/task", h.user.createTask)
+			authorized.GET("/task", h.user.getTasks)
+			authorized.PUT("/task", h.user.updateTask)
 
-		authorized.POST("/project", h.user.createProject)
-		authorized.PUT("/project", h.user.updateProject)
-		authorized.GET("/project", h.user.getProjects)
+			authorized.POST("/project", h.user.createProject)
+			authorized.PUT("/project", h.user.updateProject)
+			authorized.GET("/project", h.user.getProjects)
 
-		authorized.GET("/project/:id/task", h.user.getTasksByProject)
-	}
+			authorized.GET("/project/:id/task", h.user.getTasksByProject)
+		}
 
-	admin := router.Group("")
-	{
-		admin.Use(h.AdminMiddleware())
-		admin.POST("/user", h.createUser)
-		admin.POST("/team", h.createTeam)
-		admin.DELETE("/team/:id", h.deleteTeam)
+		admin := api.Group("admin")
+		{
+			admin.Use(h.AdminMiddleware())
+			admin.POST("/user", h.createUser)
+			admin.POST("/team", h.createTeam)
+			admin.DELETE("/team/:id", h.deleteTeam)
 
+		}
 	}
 
 	return router

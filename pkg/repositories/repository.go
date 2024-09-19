@@ -41,7 +41,6 @@ type user interface {
 	GetTask(taskId int) (database.Task, error)
 }
 
-// Repository structure to c
 type Repository struct {
 	auth
 	admin
